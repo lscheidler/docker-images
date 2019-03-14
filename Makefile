@@ -11,10 +11,7 @@ stretch-update:
 	make -C docker-tomcat8
 	make -C docker-service-wrapper
 	make -C docker-nodejs
-	#make -C docker-jar
-	#make -C docker-postgresql
-	#make -C docker-rabbitmq
-	#make -C docker-solr
+	make -C docker-ruby
 
 jessie-base-image-update:
 	make -C ansible-docker-update-image jessie-update
