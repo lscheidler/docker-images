@@ -1,10 +1,15 @@
+# Prerequirements
+
+- ansible
+- docker
+
 # Initial setup
 
-Please copy ../Makefile.global.vars.template and adjust it to Your needs:
+Please copy ../Makefile.global-vars.mk.template and adjust it to Your needs:
 
 ```
-cp ../Makefile.global.vars.template ../Makefile.global.vars
-editor ../Makefile.global.vars
+cp ../Makefile.global-vars.mk.template ../Makefile.global-vars.mk
+editor ../Makefile.global-vars.mk
 ```
 
 # Update image localrepo:debian-stretch-latest
