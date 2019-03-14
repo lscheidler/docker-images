@@ -1,0 +1,5 @@
+.*.sw*
+*.retry
+*.zip
+*.tar.*
+Makefile.global-vars.mk

@@ -1,0 +1,46 @@
+ARG  LOCAL_REPOSITORY=local
+ARG  CODE_VERSION=latest
+FROM ${LOCAL_REPOSITORY}:debian-stretch-tomcat8-${CODE_VERSION}
+
+VOLUME /data/app/data/app
+
+RUN apt-get update; \
+    apt-get install --no-install-recommends -t stretch -y service-wrapper pwgen; \
+    apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y; \
+    find /var/cache/apt -type f | xargs rm -f; \
+    find /var/lib/apt/lists -type f | xargs rm -f; \
+    find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
+    rm -rf /var/cache/debconf/*-old; \
+    localepurge
+
+RUN echo LANG="en_US.UTF-8" >> /etc/default/locale ;\
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen ;\
+    dpkg-reconfigure -u -f noninteractive locales ;\
+    sed -i -e "s/^\(assistive_technologies\)/#\1/g" /etc/java-*-openjdk/accessibility.properties
+
+COPY files/tomcat-wrapper /data/app/wrapper/app/bin/
+COPY files/context.xml files/logging.properties files/server.xml files/web.xml files/wrapper.conf files/jmxtrans-agent.xml /data/app/wrapper/app/conf/
+COPY files/defaults /etc/default/app
+COPY newrelic-agent.jar /opt/newrelic-agent.jar
+
+RUN addgroup --gid 1025 app ;\
+    adduser --home /data/app --uid 1025 --gid 1025 --disabled-password --disabled-login --gecos '' app ;\
+    mkdir -p /data/app/wrapper/app/bin ;\
+    mkdir -p /data/app/wrapper/app/endorsed ;\
+    mkdir -p /data/app/wrapper/app/temp ;\
+    mkdir -p /data/app/wrapper/app/work ;\
+    ln -s /data/app/data/app/logs /data/app/wrapper/app/logs ;\
+    chown app. -R /data/app/
+
+USER app
+
+WORKDIR /data/app/data/app
+
+ENV LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" TZ="Europe/Berlin" \
+    JAVA_INITMEMORY="512" JAVA_MAXMEMORY="1024" \
+    TOMCAT="tomcat8" \
+    NEWRELIC_AGENT_ENABLED="false" NEWRELIC_ENV="staging" \
+    JMXTRANS_AGENT_ENABLED="false" GRAPHITE_HOSTNAME="localhost" GRAPHITE_PORT="2003" GRAPHITE_NAME_PREFIX="jmxagent.#hostname#."
+
+EXPOSE 8080
+CMD ["/data/app/wrapper/app/bin/tomcat-wrapper", "console"]

@@ -1,0 +1,75 @@
+# Copyright 2018 Lars Eric Scheidler
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: set image name
+      set_fact:
+        image_name: "{{ local_repository }}:{{ src_name }}-latest"
+    - debug: var=image_name
+    - name: run container
+      docker_container:
+        name: "{{ local_repository }}-{{ src_name | regex_replace(':', '-') }}-provision"
+        image: "{{ image_name }}"
+        command: "/bin/sleep infinity"
+      register: container
+    - name: register docker container
+      add_host:
+        hostname: "{{ local_repository }}-{{ src_name | regex_replace(':', '-') }}-provision"
+
+- hosts: "{{ local_repository }}-{{ src_name | regex_replace(':', '-') }}-provision"
+  connection: docker
+  tasks:
+    - name: "update chroot"
+      apt:
+        update_cache: yes
+        upgrade: full
+    - block:
+        - name: run localepurge
+          command: localepurge
+        - name: remove downloaded packages
+          shell: find /var/cache/apt -type f | xargs rm -f
+        - name: remove apt lists
+          shell: find /var/lib/apt/lists -type f | xargs rm -f
+        - name: remove docs
+          shell: find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf
+
+- hosts: localhost
+  connection: local
+  tasks:
+    - block:
+        - set_fact:
+            timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+        - name: include variables
+          include_vars: vars.yml
+          ignore_errors: true
+        - name: "commit container"
+          command: "docker commit {{ local_repository }}-{{ src_name | regex_replace(':', '-') }}-provision {{ local_repository }}:{{ src_name }}-latest"
+        - name: "tag docker base image"
+          command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ local_repository }}:{{ src_name }}-{{ timestamp }}"
+        - block:
+            - name: tag docker base image in remote repository
+              command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:{{ src_name }}-latest"
+            - name: push docker base image into remote repository
+              command: "docker push {{ remote_repository }}:{{ src_name }}-latest"
+            - name: tag docker base image in remote repository
+              command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
+            - name: push docker base image into remote repository
+              command: "docker push {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
+          when: remote_repository is defined
+        - name: stop container
+          command: "docker stop {{ local_repository }}-{{ src_name | regex_replace(':', '-') }}-provision"
+        - name: remove container
+          command: "docker rm {{ local_repository }}-{{ src_name | regex_replace(':', '-') }}-provision"

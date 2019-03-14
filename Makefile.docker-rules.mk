@@ -1,0 +1,22 @@
+JESSIE_BASE_NAME  := debian-jessie-$(NAME)
+JESSIE_DOCKERFILE := Dockerfile
+STRETCH_BASE_NAME := debian-stretch-$(NAME)
+IMAGE_DATE        := $(shell date +"%Y%m%dT%H%M%S")
+
+build:
+	echo docker build --build-arg LOCAL_REPOSITORY=$(LOCAL_REPOSITORY) --build-arg DISTRIBUTION=stretch -t $(LOCAL_REPOSITORY):$(STRETCH_BASE_NAME)-latest -t $(LOCAL_REPOSITORY):$(STRETCH_BASE_NAME)-$(IMAGE_DATE) .
+
+push:
+	echo docker tag $(LOCAL_REPOSITORY):$(STRETCH_BASE_NAME)-$(IMAGE_DATE) $(REMOTE_REPOSITORY):$(STRETCH_BASE_NAME)-$(IMAGE_DATE)
+	echo docker push $(REMOTE_REPOSITORY):$(STRETCH_BASE_NAME)-$(IMAGE_DATE)
+	echo docker tag $(LOCAL_REPOSITORY):$(STRETCH_BASE_NAME)-latest $(REMOTE_REPOSITORY):$(STRETCH_BASE_NAME)-latest
+	echo docker push $(REMOTE_REPOSITORY):$(STRETCH_BASE_NAME)-latest
+
+build-jessie:
+	echo docker build -f $(JESSIE_DOCKERFILE) --build-arg LOCAL_REPOSITORY=$(LOCAL_REPOSITORY) --build-arg DISTRIBUTION=jessie -t $(LOCAL_REPOSITORY):$(JESSIE_BASE_NAME)-latest -t $(LOCAL_REPOSITORY):$(JESSIE_BASE_NAME)-$(IMAGE_DATE) .
+
+push-jessie:
+	echo docker tag $(LOCAL_REPOSITORY):$(JESSIE_BASE_NAME)-$(IMAGE_DATE) $(REMOTE_REPOSITORY):$(JESSIE_BASE_NAME)-$(IMAGE_DATE)
+	echo docker push $(REMOTE_REPOSITORY):$(JESSIE_BASE_NAME)-$(IMAGE_DATE)
+	echo docker tag $(LOCAL_REPOSITORY):$(JESSIE_BASE_NAME)-latest $(REMOTE_REPOSITORY):$(JESSIE_BASE_NAME)-latest
+	echo docker push $(REMOTE_REPOSITORY):$(JESSIE_BASE_NAME)-latest

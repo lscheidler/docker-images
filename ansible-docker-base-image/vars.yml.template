@@ -1,0 +1,8 @@
+temporary_directory: /var/tmp
+remote_repository: <REMOTE_REPOSITORY_ADDRESS>
+included_packages:
+  - apt-transport-https
+  - ca-certificates
+  - python
+chroot_included_packages:
+  - localepurge

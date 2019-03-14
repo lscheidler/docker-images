@@ -1,0 +1,112 @@
+# Copyright 2018 Lars Eric Scheidler
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: include variables
+      include_vars: vars.yml
+    - name: "generate chroot cache in {{ temporary_directory }}/debian-{{ distribution }}"
+      command: "debootstrap --variant=minbase --include={{ included_packages | join(',') }} {{ distribution }} {{ temporary_directory }}/debian-{{ distribution }}"
+      args: 
+        creates: "{{ temporary_directory }}/debian-{{ distribution }}"
+      register: debootstrap
+    - debug: var=temporary_directory
+    - name: register chroot
+      add_host:
+        hostname: "{{ temporary_directory }}/debian-{{ distribution }}"
+        groups: chroots
+
+- hosts: chroots
+  connection: chroot
+  tasks:
+    - name: include variables
+      include_vars: vars.yml
+    - name: generate sources.list
+      template: 
+        src: templates/sources.list.j2
+        dest: /etc/apt/sources.list
+        backup: yes
+      register: updated_sources_list
+    - name: set cache_valid_time == 0
+      set_fact:
+        cache_valid_time: 0
+      when: updated_sources_list is changed or force | default(false) | bool
+    - name: "update chroot"
+      apt:
+        cache_valid_time: "{{ cache_valid_time }}"
+        update_cache: yes
+        upgrade: full
+      register: chroot_update
+    - name: set localepurge/nopurge
+      shell: echo 'debconf localepurge/nopurge multiselect en en_US en_US.UTF-8 de de_DE de_DE.UTF-8' | debconf-set-selections
+    - name: set localepurge/use-dpkg-feature
+      shell: echo 'debconf localepurge/use-dpkg-feature select false' | debconf-set-selections
+    - name: copy apt.conf.d/ configs
+      copy:
+        src: "files/apt.conf.d/{{ item }}"
+        dest: "/etc/apt/apt.conf.d/{{ item }}"
+      loop:
+        - 50cleanup
+        - 50norecommends
+    - name: install packages
+      apt: name="{{ included_packages }}" state=present install_recommends=no
+    - name: install packages
+      apt: name="{{ chroot_included_packages }}" state=present install_recommends=no
+    - block:
+        - name: run localepurge
+          command: localepurge
+        - name: remove downloaded packages
+          shell: find /var/cache/apt -type f | xargs rm -f
+        - name: remove apt lists
+          shell: find /var/lib/apt/lists -type f | xargs rm -f
+        - name: remove docs
+          shell: find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf
+
+- hosts: localhost
+  connection: local
+  tasks:
+    - block:
+        - set_fact:
+            timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+            src_name: "debian-{{ distribution }}"
+    - name: include variables
+      include_vars: vars.yml
+    - name: register chroot_path
+      set_fact:
+        chroot_path: "{{ temporary_directory }}/debian-{{ distribution }}"
+    - name: register chroot_host
+      set_fact:
+        chroot_host: '{{ hostvars[chroot_path] }}'
+    - block:
+        - name: "create archive"
+          command: "tar cf {{ chroot_path }}.tar -C {{ chroot_path }} ."
+          args:
+            warn: False
+        - name: "create docker base image for {{ distribution }}"
+          command: "docker import {{ chroot_path }}.tar {{ local_repository }}:{{ src_name }}-latest"
+        - name: "tag docker base image"
+          command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ local_repository }}:{{ src_name }}-{{ timestamp }}"
+        - block:
+            - name: tag docker base image in remote repository
+              command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:debian-{{ distribution }}-latest"
+            - name: push docker base image into remote repository
+              command: "docker push {{ remote_repository }}:{{ src_name }}-latest"
+            - name: tag docker base image in remote repository
+              command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
+            - name: push docker base image into remote repository
+              command: "docker push {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
+          when: remote_repository is defined
+      when: debootstrap is changed or chroot_host.chroot_update is changed or force | default('no') | bool

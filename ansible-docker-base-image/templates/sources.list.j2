@@ -1,0 +1,13 @@
+deb https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }} main
+deb-src https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }} main
+
+deb https://cdn-aws.deb.debian.org/debian-security {{ ansible_distribution_release }}/updates main
+deb-src https://cdn-aws.deb.debian.org/debian-security {{ ansible_distribution_release }}/updates main
+
+# {{ ansible_distribution_release }}-updates, previously known as 'volatile'
+deb https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-updates main
+deb-src https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-updates main
+
+# {{ ansible_distribution_release }}-backports, previously on backports.debian.org
+deb https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-backports main
+deb-src https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-backports main

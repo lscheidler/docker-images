@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: include variables
+      include_vars: vars.yml
+    - name: get newrelic java agent
+      get_url:
+        url: "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/{{ newrelic_java_agent_version }}/newrelic-agent-{{ newrelic_java_agent_version }}.jar"
+        dest: ./newrelic-agent.jar
+        #checksum: "sha256:{{ newrelic_java_agent_source_sha256 }}"

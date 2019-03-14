@@ -1,0 +1,6 @@
+ARG  LOCAL_REPOSITORY=local
+ARG  CODE_VERSION=latest
+ARG  DISTRIBUTION=stretch
+FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-openjdk8-${CODE_VERSION}
+
+COPY jmxtrans-agent.jar /opt

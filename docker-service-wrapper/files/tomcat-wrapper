@@ -1,0 +1,68 @@
+#!/bin/bash
+
+function is_enabled() {
+  local KEY=$1; local VALUE=$2
+
+  if [ "$KEY" == "true" ] ; then
+    echo $VALUE
+  else
+    echo ""
+  fi
+}
+
+if [ -f "/etc/default/app" ]; then
+  echo "Load /etc/default/app file ..."
+  . "/etc/default/app"
+fi
+
+if [ -f "defaults" ]; then
+  echo "Load defaults file ..."
+  . "defaults"
+fi
+
+if [ ! -f "/data/app/wrapper/app/conf/jmxremote.password" ] ; then
+  pwgen -s1 32 > /data/app/wrapper/app/conf/jmxremote.password
+  chown app. /data/app/wrapper/app/conf/jmxremote.password
+  chmod go-rw /data/app/wrapper/app/conf/jmxremote.password
+fi
+
+# JMX CONFIG
+export JMX_LINE_1=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote")
+export JMX_LINE_2=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote.port=8083")
+export JMX_LINE_3=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote.password.file=/data/app/wrapper/app/conf/jmxremote.password")
+export JMX_LINE_4=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote.ssl=false")
+
+# DEBUG CONFIG
+export DEBUG_LINE_1=$(is_enabled "$DEBUG_ENABLED" "-Xdebug")
+export DEBUG_LINE_2=$(is_enabled "$DEBUG_ENABLED" "-Xrunjdwp:transport=dt_socket,address=8084,server=y,suspend=n")
+
+# NEWRELIC CONFIG
+export NEWRELIC_AGENT=$(is_enabled "$NEWRELIC_AGENT_ENABLED" "-javaagent:/opt/newrelic-agent.jar")
+export NEWRELIC_LINE_1=$(is_enabled "$NEWRELIC_AGENT_ENABLED" "-Dnewrelic.enabled=true")
+export NEWRELIC_LINE_2=$(is_enabled "$NEWRELIC_AGENT_ENABLED" "-Dnewrelic.config.file=/data/app/data/app/conf/newrelic.yml")
+export NEWRELIC_LINE_3=$(is_enabled "$NEWRELIC_AGENT_ENABLED" "-Dnewrelic.environment=${NEWRELIC_ENV}")
+export NEWRELIC_LINE_4=$(is_enabled "$NEWRELIC_AGENT_ENABLED" "-Dnewrelic.config.agent_enabled=${NEWRELIC_AGENT_ENABLED}")
+
+# JMXTRANS CONFIG
+export JMXTRANS_AGENT=$(is_enabled "$JMXTRANS_AGENT_ENABLED" "-javaagent:/opt/jmxtrans-agent.jar=/data/app/wrapper/app/conf/jmxtrans-agent.xml")
+export JMXTRANS_LINE_1=$(is_enabled "$JMXTRANS_AGENT_ENABLED" "-Dgraphite.host=${GRAPHITE_HOSTNAME}")
+export JMXTRANS_LINE_2=$(is_enabled "$JMXTRANS_AGENT_ENABLED" "-Dgraphite.port=${GRAPHITE_PORT}")
+export JMXTRANS_LINE_3=$(is_enabled "$JMXTRANS_AGENT_ENABLED" "-Dgraphite.namePrefix=${GRAPHITE_NAME_PREFIX}")
+
+export JAVA_ADDITIONAL_1="$JAVA_ADDITIONAL_1"
+export JAVA_ADDITIONAL_2="$JAVA_ADDITIONAL_2"
+export JAVA_ADDITIONAL_3="$JAVA_ADDITIONAL_3"
+export JAVA_ADDITIONAL_4="$JAVA_ADDITIONAL_4"
+export JAVA_ADDITIONAL_5="$JAVA_ADDITIONAL_5"
+export JAVA_ADDITIONAL_6="$JAVA_ADDITIONAL_6"
+export JAVA_ADDITIONAL_7="$JAVA_ADDITIONAL_7"
+export JAVA_ADDITIONAL_8="$JAVA_ADDITIONAL_8"
+export JAVA_ADDITIONAL_9="$JAVA_ADDITIONAL_9"
+
+export LOGPROP_LINE=$(is_enabled "$LOGPROP_ENABLED" "-DlogProp=true")
+
+#echo "################################################################################"
+#printf "# JMX PASSWORD: %s                               #\n" $(cat /data/app/wrapper/app/conf/jmxremote.password)
+#echo "################################################################################"
+
+. "/usr/share/wrapper/daemon.sh"
