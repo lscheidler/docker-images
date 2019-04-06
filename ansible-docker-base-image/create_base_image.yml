@@ -46,7 +46,7 @@
       when: updated_sources_list is changed or force | default(false) | bool
     - name: "update chroot"
       apt:
-        cache_valid_time: "{{ cache_valid_time }}"
+        cache_valid_time: "{{ cache_valid_time | default(300) }}"
         update_cache: yes
         upgrade: full
       register: chroot_update
