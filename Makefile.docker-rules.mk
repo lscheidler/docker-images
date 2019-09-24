@@ -7,10 +7,10 @@ build:
 
 push: BASE_NAME=debian-$(DISTRIBUTION)-$(NAME)
 push:
-	echo docker tag $(LOCAL_REPOSITORY):$(BASE_NAME)-$(IMAGE_DATE) $(REMOTE_REPOSITORY):$(BASE_NAME)-$(IMAGE_DATE)
-	echo docker push $(REMOTE_REPOSITORY):$(BASE_NAME)-$(IMAGE_DATE)
-	echo docker tag $(LOCAL_REPOSITORY):$(BASE_NAME)-latest $(REMOTE_REPOSITORY):$(BASE_NAME)-latest
-	echo docker push $(REMOTE_REPOSITORY):$(BASE_NAME)-latest
+	docker tag $(LOCAL_REPOSITORY):$(BASE_NAME)-$(IMAGE_DATE) $(REMOTE_REPOSITORY):$(BASE_NAME)-$(IMAGE_DATE)
+	docker push $(REMOTE_REPOSITORY):$(BASE_NAME)-$(IMAGE_DATE)
+	docker tag $(LOCAL_REPOSITORY):$(BASE_NAME)-latest $(REMOTE_REPOSITORY):$(BASE_NAME)-latest
+	docker push $(REMOTE_REPOSITORY):$(BASE_NAME)-latest
 
 get:
 	ansible-playbook ../get-resources.yml -e @resources.yml -e working_directory=$(shell pwd)

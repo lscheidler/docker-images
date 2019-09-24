@@ -31,3 +31,4 @@ update:
 	make -C docker-ruby
 	make -C docker-solr
 	make -C docker-jar
+	make -C docker-influxdb
