@@ -3,6 +3,7 @@ ARG  CODE_VERSION=latest
 ARG  DISTRIBUTION=stretch
 FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 
+ARG DISTRIBUTION=stretch
 RUN apt-get update; \
     apt-get install -t ${DISTRIBUTION} -y nginx-light; \
     apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y; \

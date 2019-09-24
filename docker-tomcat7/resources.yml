@@ -1,0 +1,10 @@
+tomcat7_version: 7.0.96
+tomcat7_checksum: a7ab7627ebafab8c5e5b1b09cff3a6e760f45dbc9b9ab235e14532357e47cf3bb6bbcfbdd92cd94561fe471296fd734d221ba8d59e1216a8369d2c39b1a80c98
+
+resources:
+  - name: tomcat7
+    url: "http://miroir.univ-lorraine.fr/apache/tomcat/tomcat-7/v{{ tomcat7_version }}/bin/apache-tomcat-7.0.96.tar.gz"
+    destination_file: tomcat7.tar.gz
+    checksum_type: sha512
+    checksum: "{{ tomcat7_checksum }}"
+    delete: apache-tomcat*/webapps

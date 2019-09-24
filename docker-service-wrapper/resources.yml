@@ -1,0 +1,6 @@
+newrelic_java_agent_version: 4.11.0
+
+resources:
+  - name: newrelic-java-agent
+    url: "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/{{ newrelic_java_agent_version }}/newrelic-agent-{{ newrelic_java_agent_version }}.jar"
+    destination_file: newrelic-agent.jar

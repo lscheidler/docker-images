@@ -2,8 +2,11 @@ all: stretch
 
 include ../Makefile.global-vars.mk
 
-jessie:
-	ansible-playbook create_base_image.yml -e local_repository=$(LOCAL_REPOSITORY) -e distribution=jessie
+stretch: DISTRIBUTION=stretch
+stretch: create-base-image
 
-stretch:
-	ansible-playbook create_base_image.yml -e local_repository=$(LOCAL_REPOSITORY) -e distribution=stretch
+buster: DISTRIBUTION=buster
+buster: create-base-image
+
+create-base-image:
+	ansible-playbook create_base_image.yml -e local_repository=$(LOCAL_REPOSITORY) -e distribution=$(DISTRIBUTION) -e force=true

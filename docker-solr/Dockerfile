@@ -3,6 +3,7 @@ ARG  CODE_VERSION=latest
 ARG  DISTRIBUTION=stretch
 FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-openjdk8-${CODE_VERSION}
 
+ARG DISTRIBUTION=stretch
 RUN apt-get update; \
     apt-get install -y gzip tar ;\
     apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y; \

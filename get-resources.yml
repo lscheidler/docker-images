@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: "download {{ resource.name }}"
+      get_url:
+        url: "{{ resource.url }}"
+        dest: "{{ working_directory }}/{{ resource.destination_file }}"
+        checksum: "{{ resource.checksum_type }}:{{ resource.checksum }}"
+      loop: "{{ resources }}"
+      loop_control:
+        loop_var: resource
+      when: resource.checksum is defined
+    - name: "download {{ resource.name }}"
+      get_url:
+        url: "{{ resource.url }}"
+        dest: "{{ working_directory }}/{{ resource.destination_file }}"
+      loop: "{{ resources }}"
+      loop_control:
+        loop_var: resource
+      when: resource.checksum is undefined
+    - name: strip files from archive
+      shell: "cat {{ working_directory }}/{{ resource.destination_file }} | {{ resource.uncompress_command | default(uncompress_command) }} | tar --delete --wildcards {{ resource.delete }} | {{ resource.compress_command | default(compress_command) }} > {{ working_directory }}/{{ resource.destination_file | regex_replace('\\.([a-z.]*)', '-small.\\1') }}"
+      when: resource.delete is defined
+      loop: "{{ resources }}"
+      loop_control:
+        loop_var: resource
+  vars:
+    compress_command: gzip
+    uncompress_command: gunzip

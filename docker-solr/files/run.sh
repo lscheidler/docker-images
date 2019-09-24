@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "${GRAPHITE_HOST}" != "" ] ; then
-  cp /etc/solr/solr.metrics.xml /data/app/conf
+  cp /etc/solr/solr.metrics.xml /data/app/conf/solr.xml
 
   ADDITIONAL_CMD_OPTS="${ADDITIONAL_CMD_OPTS} -Dgraphite.host=${GRAPHITE_HOST}"
 else

@@ -1,6 +1,6 @@
 all: stretch
 
-NAME := tomcat8
+NAME := jar
 
 include ../Makefile.global-vars.mk
 include ../Makefile.docker-rules.mk

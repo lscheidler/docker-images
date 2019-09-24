@@ -8,6 +8,8 @@ deb-src https://cdn-aws.deb.debian.org/debian-security {{ ansible_distribution_r
 deb https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-updates main
 deb-src https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-updates main
 
+{% if ansible_distribution_major_version > "8" %}
 # {{ ansible_distribution_release }}-backports, previously on backports.debian.org
 deb https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-backports main
 deb-src https://cdn-aws.deb.debian.org/debian {{ ansible_distribution_release }}-backports main
+{% endif %}

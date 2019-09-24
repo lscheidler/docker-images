@@ -1,11 +1,12 @@
 ARG  LOCAL_REPOSITORY=local
 ARG  CODE_VERSION=latest
-FROM ${LOCAL_REPOSITORY}:debian-stretch-tomcat8-${CODE_VERSION}
+ARG  TOMCAT=tomcat8
+ARG  DISTRIBUTION=stretch
+FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${TOMCAT}-${CODE_VERSION}
 
-VOLUME /data/app/data/app
-
+ARG DISTRIBUTION=stretch
 RUN apt-get update; \
-    apt-get install --no-install-recommends -t stretch -y service-wrapper pwgen; \
+    apt-get install --no-install-recommends -t ${DISTRIBUTION} -y service-wrapper pwgen; \
     apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y; \
     find /var/cache/apt -type f | xargs rm -f; \
     find /var/lib/apt/lists -type f | xargs rm -f; \
@@ -29,6 +30,7 @@ RUN addgroup --gid 1025 app ;\
     mkdir -p /data/app/wrapper/app/endorsed ;\
     mkdir -p /data/app/wrapper/app/temp ;\
     mkdir -p /data/app/wrapper/app/work ;\
+    mkdir -p /data/app/data/app ;\
     ln -s /data/app/data/app/logs /data/app/wrapper/app/logs ;\
     chown app. -R /data/app/
 
@@ -36,9 +38,11 @@ USER app
 
 WORKDIR /data/app/data/app
 
+VOLUME /data/app/data/app/conf
+VOLUME /data/app/data/app/logs
+
 ENV LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" TZ="Europe/Berlin" \
     JAVA_INITMEMORY="512" JAVA_MAXMEMORY="1024" \
-    TOMCAT="tomcat8" \
     NEWRELIC_AGENT_ENABLED="false" NEWRELIC_ENV="staging" \
     JMXTRANS_AGENT_ENABLED="false" GRAPHITE_HOSTNAME="localhost" GRAPHITE_PORT="2003" GRAPHITE_NAME_PREFIX="jmxagent.#hostname#."
 

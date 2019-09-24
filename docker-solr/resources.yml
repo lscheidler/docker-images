@@ -1,0 +1,11 @@
+solr_version: 8.2.0
+solr_mirror: http://ftp.halifax.rwth-aachen.de/apache/lucene/solr
+solr_checksum: beb4e37fc21bf483e3b6bae43cb06a49bc420a0f2b920c97909a69a5efeacba1e7d2ff09ae8018446c87bf007f88f06a59de73cd1923f0967e8206629b0509b6
+
+resources:
+  - name: solr
+    url: "{{ solr_mirror }}/{{ solr_version }}/solr-{{ solr_version }}.tgz"
+    destination_file: solr.tgz
+    checksum_type: sha512
+    checksum: "{{ solr_checksum }}"
+    delete: solr*/contrib solr*/dist solr*/example
