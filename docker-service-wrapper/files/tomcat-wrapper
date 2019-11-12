@@ -29,7 +29,8 @@ fi
 # JMX CONFIG
 export JMX_LINE_1=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote")
 export JMX_LINE_2=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote.port=8083")
-export JMX_LINE_3=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote.password.file=/data/app/wrapper/app/conf/jmxremote.password")
+JMX_PASSWORD_ENABLED=$(is_enabled "$JMX_ENABLED" "$JMX_PASSWORD_ENABLED")
+export JMX_LINE_3=$(is_enabled "$JMX_PASSWORD_ENABLED" "-Dcom.sun.management.jmxremote.password.file=/data/app/wrapper/app/conf/jmxremote.password")
 export JMX_LINE_4=$(is_enabled "$JMX_ENABLED" "-Dcom.sun.management.jmxremote.ssl=false")
 
 # DEBUG CONFIG
@@ -58,8 +59,6 @@ export JAVA_ADDITIONAL_6="$JAVA_ADDITIONAL_6"
 export JAVA_ADDITIONAL_7="$JAVA_ADDITIONAL_7"
 export JAVA_ADDITIONAL_8="$JAVA_ADDITIONAL_8"
 export JAVA_ADDITIONAL_9="$JAVA_ADDITIONAL_9"
-
-export LOGPROP_LINE=$(is_enabled "$LOGPROP_ENABLED" "-DlogProp=true")
 
 #echo "################################################################################"
 #printf "# JMX PASSWORD: %s                               #\n" $(cat /data/app/wrapper/app/conf/jmxremote.password)
