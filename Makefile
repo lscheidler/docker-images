@@ -32,3 +32,6 @@ update:
 	make -C docker-solr
 	make -C docker-jar
 	make -C docker-influxdb
+	make -C docker-vault
+	make -C docker-tomcat7
+	make -C docker-service-wrapper tomcat7

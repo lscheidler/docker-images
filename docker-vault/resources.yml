@@ -1,0 +1,10 @@
+vault_version: 1.3.0
+vault_source_sha256: d89b8a317831b06f2a32c56cb86071d058b09d9317b416bb509ce3d01e912eb3
+
+resources:
+  - name: vault
+    url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+    destination_file: vault.zip
+    checksum_type: sha256
+    checksum: "{{ vault_source_sha256 }}"
+    unarchive: true

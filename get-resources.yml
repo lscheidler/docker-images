@@ -25,6 +25,14 @@
       loop: "{{ resources }}"
       loop_control:
         loop_var: resource
+    - name: unarchive resource
+      unarchive:
+        src: "{{ working_directory }}/{{ resource.destination_file }}"
+        dest: "{{ working_directory }}/"
+      when: resource.unarchive is defined and resource.unarchive
+      loop: "{{ resources }}"
+      loop_control:
+        loop_var: resource
   vars:
     compress_command: gzip
     uncompress_command: gunzip
