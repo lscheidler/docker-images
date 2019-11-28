@@ -1,4 +1,5 @@
 all: buster
+default: get build push
 
 DISTRIBUTION := buster
 NAME := vault
