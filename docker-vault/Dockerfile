@@ -1,7 +1,7 @@
 ARG  LOCAL_REPOSITORY=local
 ARG  CODE_VERSION=latest
 ARG  DISTRIBUTION=buster
-FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-vault-${CODE_VERSION}
+FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 
 ADD vault /usr/local/bin/
 COPY files/run /usr/local/bin/run
