@@ -1,0 +1,11 @@
+require_relative '../rake/helper'
+
+image :create_base_image do
+  Rake::Task[:default].clear
+  task default: [:build]
+
+  Rake::Task[:build].clear
+  task :build do
+	  sh "sudo -E ansible-playbook create_base_image.yml -e local_repository=#{@local_repository} -e remote_repository=#{@remote_repository} -e distribution=#{@distribution} -e force=true"
+  end
+end

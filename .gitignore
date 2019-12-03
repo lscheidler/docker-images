@@ -2,4 +2,5 @@
 *.retry
 *.zip
 *.tar.*
+rake/config.rb
 Makefile.global-vars.mk

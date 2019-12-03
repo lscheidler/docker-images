@@ -1,0 +1,6 @@
+require_relative '../rake/helper'
+
+image "jmxtrans-agent" do
+  Rake::Task[:default].clear
+  task default: [:get, :build, :push]
+end

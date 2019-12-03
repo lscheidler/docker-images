@@ -1,0 +1,10 @@
+@local_repository = "<local-repository>"
+@remote_repository = "<remote-repository>"
+
+# parameter override examples
+#@override = {}
+#@override[:all] = {}
+#@override[:all][:docker_build_args] = "--build-arg USER_UID=1025"
+
+#@override[:image_name] = {}
+#@override[:image_name][:docker_build_args] = "--build-arg USER_UID=1025"

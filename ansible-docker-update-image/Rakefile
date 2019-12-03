@@ -1,0 +1,11 @@
+require_relative '../rake/helper'
+
+image :update_base_image do
+  Rake::Task[:default].clear
+  task default: [:build]
+
+  Rake::Task[:build].clear
+  task :build do
+	  sh "ansible-playbook update_image.yml -e local_repository=#{@local_repository} -e remote_repository=#{@remote_repository} -e src_name=debian-#{@distribution}"
+  end
+end
