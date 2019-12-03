@@ -17,7 +17,7 @@ def image name, &block
   
   @namespace.tasks.each do |task|
     desc "[#{name}] " + task.full_comment if task.full_comment
-    task "#{task.name[/^[^:]*:(.*)/, 1]}": [task.name]
+    task "#{task.name[/^[^:]*:(.*)/, 1]}" => [task.name]
   end
 end
 
