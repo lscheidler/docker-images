@@ -11,7 +11,8 @@ RUN addgroup --gid ${USER_UID} user ;\
     adduser --home /home/user --uid ${USER_UID} --gid ${USER_UID} --disabled-password --disabled-login --gecos '' user
 
 VOLUME /etc/vault
-VOLUME /data
+VOLUME /data/storage
+VOLUME /data/logs
 
 USER user
 
