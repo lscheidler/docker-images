@@ -27,7 +27,7 @@
         loop_var: resource
     - name: create destination directory
       file:
-        path: "{{ working_directory }}/{{ resource.destination | default(omit) }}"
+        path: "{{ working_directory }}/{{ resource.destination | default('') }}"
         state: directory
       when: resource.destination is defined and resource.unarchive is defined and resource.unarchive
       loop: "{{ resources }}"
@@ -36,7 +36,7 @@
     - name: unarchive resource
       unarchive:
         src: "{{ working_directory }}/{{ resource.destination_file }}"
-        dest: "{{ working_directory }}/{{ resource.destination | default(omit) }}"
+        dest: "{{ working_directory }}/{{ resource.destination | default('') }}"
         exclude: "{{ resource.exclude | default(omit) }}"
       when: resource.unarchive is defined and resource.unarchive
       loop: "{{ resources }}"
