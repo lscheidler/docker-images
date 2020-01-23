@@ -5,4 +5,9 @@ image :vault do
 
   Rake::Task[:default].clear
   task default: [:get, :build, :push]
+
+  task :run do
+    base_name = "debian-#{@distribution}-#{@name}"
+    sh "docker run --privileged -it --rm=true -v #{Dir.pwd}/volumes/conf:/etc/vault -v #{Dir.pwd}/volumes/logs:/data/logs -v #{Dir.pwd}/volumes/data:/data/storage -p 8200:8200 #{@local_repository}:#{base_name}-latest"
+  end
 end

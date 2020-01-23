@@ -1,9 +1,9 @@
-tomcat7_version: 7.0.96
-tomcat7_checksum: a7ab7627ebafab8c5e5b1b09cff3a6e760f45dbc9b9ab235e14532357e47cf3bb6bbcfbdd92cd94561fe471296fd734d221ba8d59e1216a8369d2c39b1a80c98
+tomcat7_version: 7.0.99
+tomcat7_checksum: f53fb4fe6e568afe03fcf23043a3125b0c0ad99872146ff150a30333be92e6322b2278bfcfb2cce67112f09c3aa464086442bb8a79280548b179127ed1abbca9
 
 resources:
   - name: tomcat7
-    url: "http://miroir.univ-lorraine.fr/apache/tomcat/tomcat-7/v{{ tomcat7_version }}/bin/apache-tomcat-7.0.96.tar.gz"
+    url: "http://miroir.univ-lorraine.fr/apache/tomcat/tomcat-7/v{{ tomcat7_version }}/bin/apache-tomcat-{{ tomcat7_version }}.tar.gz"
     destination_file: tomcat7.tar.gz
     checksum_type: sha512
     checksum: "{{ tomcat7_checksum }}"

@@ -1,6 +1,6 @@
-solr_version: 8.3.0
+solr_version: 8.4.1
 solr_mirror: http://ftp.halifax.rwth-aachen.de/apache/lucene/solr
-solr_checksum: 1b55d25c738ba4b606f02f7830d510bfeac7686bd1a5f65ba2fcac72592e2607c05a552295522996c15b5730827c57f4b490e36d79b734681ba2f5d664062a09
+solr_checksum: 2f210dae8d6a07b111ede22005fbd16aa6848900cda8adb352a33e08229783a170dddb529a7eb990f5157d4f5427c199df2114b9c0ffecdf9490a2ac07c6bb09
 
 resources:
   - name: solr

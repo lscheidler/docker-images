@@ -1,0 +1,8 @@
+require_relative '../rake/helper'
+
+image :mailslurper do
+  @distribution = ENV["distribution"] || "buster"
+
+  Rake::Task[:default].clear
+  task default: [:get, :build, :push]
+end
