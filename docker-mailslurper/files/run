@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ "$CONFIG_FILE" == "" ] ; then
+  CONFIG_FILE="/opt/mailslurper/config.json"
+fi
+
+sed -i \
+    -e "s/\(wwwAddress\": \"\)[a-z0-9.]*/\1$WWW_ADDRESS/g" \
+    -e "s/\(wwwPort\": \)[0-9]*/\1$WWW_PORT/g" \
+    -e "s/\(serviceAddress\": \"\)[a-z0-9.]*/\1$SERVICE_ADDRESS/g" \
+    -e "s/\(servicePort\": \)[0-9]*/\1$SERVICE_PORT/g" \
+    -e "s/\(smtpAddress\": \"\)[a-z0-9.]*/\1$SMTP_ADDRESS/g" \
+    -e "s/\(smtpPort\": \)[0-9]*/\1$SMTP_PORT/g" \
+    $CONFIG_FILE
+
+/opt/mailslurper/mailslurper
