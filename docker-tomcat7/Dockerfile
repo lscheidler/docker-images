@@ -15,6 +15,10 @@ RUN apt-get update; \
 
 ADD tomcat7-small.tar.gz /opt
 
+# fix permissions
+RUN find /opt -type f | xargs chmod go+r ;\
+    find /opt -type d | xargs chmod go+rx
+
 RUN ln -s /opt/apache-tomcat* /usr/share/tomcat7
 
 ENV TOMCAT=tomcat7
