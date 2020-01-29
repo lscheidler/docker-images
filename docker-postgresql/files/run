@@ -1,0 +1,40 @@
+#!/bin/bash
+
+/usr/bin/pg_ctlcluster 11 --foreground main start &
+sleep 2
+
+if [ "$POSTGRESQL_ADMIN_USER" != "" ] && [ "$POSTGRESQL_ADMIN_USER_PASSWORD" != "" ]; then
+  su -c "psql -c \"CREATE USER $POSTGRESQL_ADMIN_USER SUPERUSER PASSWORD '$POSTGRESQL_ADMIN_USER_PASSWORD';\" postgres" postgres
+fi
+
+if [ "$POSTGRESQL_USER" != "" ] && [ "$POSTGRESQL_USER_PASSWORD" != "" ]; then
+  su -c "psql -c \"CREATE USER $POSTGRESQL_USER PASSWORD '$POSTGRESQL_USER_PASSWORD';\" postgres" postgres
+
+  if [ "$POSTGRESQL_DATABASE" != "" ] ; then
+    su -c "psql -c \"CREATE DATABASE $POSTGRESQL_DATABASE OWNER $POSTGRESQL_USER;\" postgres" postgres
+
+    if [ "$POSTGRESQL_SEARCH_PATH" != "" ] ; then
+      su -c "psql -c \"ALTER DATABASE $POSTGRESQL_DATABASE set search_path = $POSTGRESQL_SEARCH_PATH;\" postgres" postgres
+    fi
+
+    for EXTENSION in $POSTGRESQL_DATABASE_EXTENSIONS; do
+      su -c "psql -c \"CREATE EXTENSION IF NOT EXISTS \\\"$EXTENSION\\\" WITH SCHEMA public;\" $POSTGRESQL_DATABASE" postgres
+    done
+  fi
+fi
+
+for USER in "$POSTGRESQL_ADDITIONAL_USERS" ; do
+  USERNAME=$(echo "$USER" | cut -d : -f 1)
+  PASSWORD=$(echo "$USER" | cut -d : -f 2)
+
+  su -c "psql -c \"CREATE USER $USERNAME PASSWORD '$PASSWORD';\" postgres" postgres
+done
+
+if [ "$POSTGRESQL_INIT_DATA" != "" ] ; then
+  for FILE in "$POSTGRESQL_INIT_DATA/*.sql" ; do
+    echo psql -f $FILE $POSTGRESQL_DATABASE
+    su -c "psql -f $FILE $POSTGRESQL_DATABASE" postgres
+  done
+fi
+
+wait
