@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# create cluster
+/usr/bin/pg_createcluster 11 main
+
+# listen to any
+/usr/bin/pg_conftool set listen_addresses '*'
+
 /usr/bin/pg_ctlcluster 11 --foreground main start &
 sleep 2
 
