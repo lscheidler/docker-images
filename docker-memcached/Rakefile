@@ -1,0 +1,5 @@
+require_relative '../rake/helper'
+
+image :memcached do
+  @distribution = ENV["distribution"] || "buster"
+end

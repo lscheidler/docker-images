@@ -21,6 +21,8 @@ images = [
   {directory: 'docker-mailslurper', name: 'mailslurper'},
   {directory: 'docker-postgresql', name: 'postgresql'},
   {directory: 'docker-postgresql-client', name: 'postgresql-client'},
+  {directory: 'docker-memcached', name: 'memcached'},
+  {directory: 'docker-busybox', name: 'busybox'},
 ]
 
 dependencies = {}
