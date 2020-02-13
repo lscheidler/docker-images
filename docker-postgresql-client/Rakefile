@@ -1,0 +1,5 @@
+require_relative '../rake/helper'
+
+image "postgresql-client" do
+  @distribution = ENV["distribution"] || "buster"
+end

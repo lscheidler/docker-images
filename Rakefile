@@ -20,6 +20,7 @@ images = [
   {directory: 'docker-service-wrapper', name: 'service-wrapper-tomcat7', parameter: "tomcat=tomcat7"},
   {directory: 'docker-mailslurper', name: 'mailslurper'},
   {directory: 'docker-postgresql', name: 'postgresql'},
+  {directory: 'docker-postgresql-client', name: 'postgresql-client'},
 ]
 
 dependencies = {}
