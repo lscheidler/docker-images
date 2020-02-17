@@ -1,0 +1,82 @@
+#!/bin/bash
+
+function create_user_or_change_password {
+  local EXISTING_USERS=$1
+  local USERNAME=$2
+  local PASSWORD=$3
+  local TAGS=$4
+
+  if echo "$EXISTING_USERS" | grep $USERNAME ; then
+    echo "[add user] /usr/sbin/rabbitmqctl change_password $USERNAME xxxxxx"
+    /usr/sbin/rabbitmqctl change_password $USERNAME $PASSWORD
+  else
+    echo "[add user] /usr/sbin/rabbitmqctl add_user $USERNAME xxxxxx"
+    /usr/sbin/rabbitmqctl add_user $USERNAME $PASSWORD
+  fi
+
+  if [ "$TAGS" != "" ] ; then
+    echo "[add user] /usr/sbin/rabbitmqctl set_user_tags $USERNAME $TAGS"
+    /usr/sbin/rabbitmqctl set_user_tags $USERNAME $TAGS
+  fi
+}
+
+if [ -f "$PROVISION_CONFIG" ] ; then
+  RABBITMQ_PLUGINS=$(cat $PROVISION_CONFIG | jq -r '.plugins | join(" ")')
+
+  # enable configured plugins
+  if [ "$RABBITMQ_PLUGINS" != "null" ] ; then
+    echo rabbitmq-plugins enable --offline $RABBITMQ_PLUGINS
+    rabbitmq-plugins enable --offline $RABBITMQ_PLUGINS
+  fi
+fi
+
+/sbin/start-stop-daemon --chuid rabbitmq --start --exec /usr/sbin/rabbitmq-server &
+rabbitmqctl wait -P $!
+
+if [ -f "$RABBITMQ_DEFINITIONS" ] ; then
+  rabbitmqadmin import $RABBITMQ_DEFINITIONS
+fi
+
+if [ -f "$PROVISION_CONFIG" ] ; then
+  ####
+  # Add vhost
+  ####
+  for RABBITMQ_VHOST in $(cat $PROVISION_CONFIG |jq -r '.vhosts // [] | join(" ")'); do
+    echo "[add vhost] /usr/sbin/rabbitmqctl add_vhost $RABBITMQ_VHOST"
+    /usr/sbin/rabbitmqctl add_vhost $RABBITMQ_VHOST
+  done
+
+  ####
+  # Add user
+  ####
+  RABBITMQ_USERS=$(cat $PROVISION_CONFIG |jq '.users // {}')
+
+  echo "[add user] /usr/sbin/rabbitmqctl list_users"
+  CONFIGURED_RABBITMQ_USERS=$(/usr/sbin/rabbitmqctl list_users)
+
+  for RABBITMQ_USER in $(echo "$RABBITMQ_USERS" | jq -r '. | keys | join(" ")') ; do
+    PASSWORD=$(echo "$RABBITMQ_USERS" | jq -r ".[\"$RABBITMQ_USER\"].password")
+    TAGS=$(echo "$RABBITMQ_USERS" | jq -r ".[\"$RABBITMQ_USER\"].tags // \"\"")
+
+    create_user_or_change_password "$CONFIGURED_RABBITMQ_USERS" "$RABBITMQ_USER" "$PASSWORD" "$TAGS"
+  done
+
+  ####
+  # Add permission
+  ####
+  RABBITMQ_PERMISSIONS=$(cat $PROVISION_CONFIG |jq '.permissions // []')
+
+  for RABBITMQ_PERMISSION_INDEX in $(seq 0 $(echo $RABBITMQ_PERMISSIONS | jq '. | length-1')) ; do
+    RABBITMQ_PERMISSION=$(echo $RABBITMQ_PERMISSIONS | jq ".[$RABBITMQ_PERMISSION_INDEX]")
+    RABBITMQ_PERMISSION_VHOST=$(echo $RABBITMQ_PERMISSION | jq -r '.["vhost"] // "/"')
+    RABBITMQ_PERMISSION_USERNAME=$(echo $RABBITMQ_PERMISSION | jq -r '.["username"]')
+    RABBITMQ_PERMISSION_CONF=$(echo $RABBITMQ_PERMISSION | jq -r '.["conf"]')
+    RABBITMQ_PERMISSION_WRITE=$(echo $RABBITMQ_PERMISSION | jq -r '.["write"]')
+    RABBITMQ_PERMISSION_READ=$(echo $RABBITMQ_PERMISSION | jq -r '.["read"]')
+
+    echo "[add permission] /usr/sbin/rabbitmqctl set_permissions -p \"$RABBITMQ_PERMISSION_VHOST\" \"$RABBITMQ_PERMISSION_USERNAME\" \"$RABBITMQ_PERMISSION_CONF\" \"$RABBITMQ_PERMISSION_WRITE\" \"$RABBITMQ_PERMISSION_READ\""
+    /usr/sbin/rabbitmqctl set_permissions -p "$RABBITMQ_PERMISSION_VHOST" "$RABBITMQ_PERMISSION_USERNAME" "$RABBITMQ_PERMISSION_CONF" "$RABBITMQ_PERMISSION_WRITE" "$RABBITMQ_PERMISSION_READ"
+  done
+fi
+
+wait

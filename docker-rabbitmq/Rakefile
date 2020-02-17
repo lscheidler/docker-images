@@ -1,0 +1,5 @@
+require_relative '../rake/helper'
+
+image :rabbitmq do
+  @distribution = ENV["distribution"] || "buster"
+end
