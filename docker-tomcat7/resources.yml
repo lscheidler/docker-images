@@ -1,5 +1,5 @@
-tomcat7_version: 7.0.99
-tomcat7_checksum: f53fb4fe6e568afe03fcf23043a3125b0c0ad99872146ff150a30333be92e6322b2278bfcfb2cce67112f09c3aa464086442bb8a79280548b179127ed1abbca9
+tomcat7_version: 7.0.100
+tomcat7_checksum: c81fbd42e47e269ceae530ab75f9eacba59dbbad1fc608a90cd4dad0b25202df81f006f3270f5691eb22aae4eed760435beb616b469e30e0f8c6f8fe2a183eec
 
 resources:
   - name: tomcat7
