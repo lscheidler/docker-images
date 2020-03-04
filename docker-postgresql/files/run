@@ -6,6 +6,14 @@
 # listen to any
 /usr/bin/pg_conftool set listen_addresses '*'
 
+# postgresql conf
+for CONF in "$POSTGRESQL_CONF" ; do
+  KEY=$(echo "$CONF" | cut -d : -f 1)
+  VALUE=$(echo "$CONF" | cut -d : -f 2)
+
+  /usr/bin/pg_conftool set $KEY "$VALUE"
+done
+
 /usr/bin/pg_ctlcluster 11 --foreground main start &
 sleep 2
 
@@ -37,7 +45,7 @@ for USER in "$POSTGRESQL_ADDITIONAL_USERS" ; do
 done
 
 if [ "$POSTGRESQL_INIT_DATA" != "" ] ; then
-  for FILE in "$POSTGRESQL_INIT_DATA/*.sql" ; do
+  for FILE in $(find "$POSTGRESQL_INIT_DATA" -name "*.sql" | sort -n) ; do
     echo psql -f $FILE $POSTGRESQL_DATABASE
     su -c "psql -f $FILE $POSTGRESQL_DATABASE" postgres
   done
