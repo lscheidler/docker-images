@@ -1,0 +1,7 @@
+require_relative '../rake/helper'
+
+image "easy-rsa" do
+  @distribution = ENV["distribution"] || "buster"
+
+  Rake::Task[:default].clear
+end

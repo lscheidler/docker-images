@@ -24,6 +24,7 @@ images = [
   {directory: 'docker-postgresql-client', name: 'postgresql-client'},
   {directory: 'docker-memcached', name: 'memcached'},
   {directory: 'docker-busybox', name: 'busybox'},
+  {directory: 'docker-easy-rsa', name: 'easy-rsa'},
 ]
 
 dependencies = {}
