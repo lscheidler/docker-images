@@ -11,6 +11,10 @@ sed -i \
     -e "s/\(servicePort\": \)[0-9]*/\1$SERVICE_PORT/g" \
     -e "s/\(smtpAddress\": \"\)[a-z0-9.]*/\1$SMTP_ADDRESS/g" \
     -e "s/\(smtpPort\": \)[0-9]*/\1$SMTP_PORT/g" \
+    -e "s#\(keyFile\": \"\)[a-z0-9.]*#\1$KEY_FILE#g" \
+    -e "s#\(certFile\": \"\)[a-z0-9.]*#\1$CERT_FILE#g" \
+    -e "s#\(adminKeyFile\": \"\)[a-z0-9.]*#\1$ADMIN_KEY_FILE#g" \
+    -e "s#\(adminCertFile\": \"\)[a-z0-9.]*#\1$ADMIN_CERT_FILE#g" \
     $CONFIG_FILE
 
 /opt/mailslurper/mailslurper
