@@ -17,9 +17,11 @@ RUN rm -f /etc/nginx/sites-enabled/*
 
 COPY files/run.sh /usr/local/bin/run
 COPY files/proxy.conf /etc/nginx/sites-available/
+COPY files/static.conf /etc/nginx/sites-available/
 COPY files/preferences.conf /etc/nginx/conf.d/
 
 VOLUME /etc/ssl/private
+VOLUME /var/www
 
 ENV CERTIFICATE_BASE_NAME=wildcard ENDPOINT_NAME=backend ENDPOINT_PROTOCOL=http ENDPOINT_PORT=8080
 

@@ -1,3 +1,5 @@
 require_relative '../rake/helper'
 
-image :nginx
+image :nginx do
+  @distribution = ENV["distribution"] || "buster"
+end

@@ -1,5 +1,5 @@
 require_relative '../rake/helper'
 
-image "easy-rsa" do
+image :mariadb do
   @distribution = ENV["distribution"] || "buster"
 end

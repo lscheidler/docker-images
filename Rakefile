@@ -25,6 +25,7 @@ images = [
   {directory: 'docker-memcached', name: 'memcached'},
   {directory: 'docker-busybox', name: 'busybox'},
   {directory: 'docker-easy-rsa', name: 'easy-rsa'},
+  {directory: 'docker-mariadb', name: 'mariadb'},
 ]
 
 dependencies = {}

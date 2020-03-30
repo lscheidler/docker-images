@@ -42,6 +42,7 @@ case "$ACTION" in
     if [ "$NAME" != "" ] ; then
       if [ ! -f pki/private/${NAME}.key ] ; then
         execute "./easyrsa --batch build-server-full ${NAME} nopass"
+        cat pki/issued/${NAME}.crt pki/private/${NAME}.key pki/ca.crt > pki/issued/${NAME}.bundle.pem
       else
         echo "name already exists."
       fi

@@ -4,3 +4,4 @@
 *.tar.*
 rake/config.rb
 Makefile.global-vars.mk
+.run

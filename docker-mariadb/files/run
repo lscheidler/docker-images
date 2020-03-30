@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$(ls -l /var/lib/mysql/|wc -l)" -lt 5 ] ; then
+  mysql_install_db --skip-test-db
+  #/usr/bin/mysql_secure_installation
+fi
+
+tail -f /var/log/mysql/error.log &
+/usr/sbin/mysqld &
+sleep 2
+
+if [ "$MYSQL_ADMIN_USER" != "" ] && [ "$MYSQL_ADMIN_USER_PASSWORD" != "" ]; then
+  mysql --execute "CREATE USER IF NOT EXISTS '$MYSQL_ADMIN_USER'@'%' IDENTIFIED BY '$MYSQL_ADMIN_USER_PASSWORD'; GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_ADMIN_USER'@'%' ;"
+fi
+
+if [ "$MYSQL_USER" != "" ] && [ "$MYSQL_USER_PASSWORD" != "" ]; then
+  mysql --execute "CREATE USER IF NOT EXISTS $MYSQL_USER IDENTIFIED BY '$MYSQL_USER_PASSWORD';"
+
+  if [ "$MYSQL_DATABASE" != "" ] ; then
+    mysql --execute "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE; GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%'; flush privileges"
+  fi
+fi
+wait

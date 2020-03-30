@@ -1,0 +1,8 @@
+[mysqld]
+
+#
+# * Basic Settings
+#
+user                    = mysql
+pid-file                = /run/mysql/mysqld.pid
+bind-address            = 0.0.0.0
