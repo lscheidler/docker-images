@@ -16,10 +16,12 @@ RUN apt-get update; \
 RUN rm -f /etc/nginx/sites-enabled/*
 
 COPY files/run.sh /usr/local/bin/run
+COPY files/custom.conf /etc/nginx/sites-available/
 COPY files/proxy.conf /etc/nginx/sites-available/
 COPY files/static.conf /etc/nginx/sites-available/
 COPY files/preferences.conf /etc/nginx/conf.d/
 
+VOLUME /etc/nginx/includes
 VOLUME /etc/ssl/private
 VOLUME /var/www
 

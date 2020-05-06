@@ -10,6 +10,9 @@ enable_site() {
 }
 
 case "$MODE" in
+  custom)
+    enable_site /etc/nginx/sites-available/custom.conf
+    ;;
   static)
     enable_site /etc/nginx/sites-available/static.conf
     ;;
