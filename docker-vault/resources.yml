@@ -1,5 +1,5 @@
-vault_version: 1.4.1
-vault_source_sha256: d8266ae2a9a97dcdd3edaf5e05331f7d73dcd1c02470da9e1304c7823d30734a
+vault_version: 1.4.3
+vault_source_sha256: f486da4f6d08e42eb2c17e95cf36cc7f9d9c0e7cc8ced06ce3fca7c3abd7db3d
 
 resources:
   - name: vault
