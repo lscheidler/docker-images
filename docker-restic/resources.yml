@@ -1,0 +1,10 @@
+restic_version: 0.10.0
+restic_source_sha256: 41d47f100f61c503c462f53069e5c2aaad4dafec461e56b85b1de7730e4f9c4d
+
+resources:
+  - name: restic
+    url: "https://github.com/restic/restic/releases/download/v{{ restic_version }}/restic_{{ restic_version }}_linux_amd64.bz2"
+    destination_file: restic.bz2
+    checksum_type: sha256
+    checksum: "{{ restic_source_sha256 }}"
+    #unarchive: true

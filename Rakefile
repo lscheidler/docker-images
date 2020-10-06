@@ -26,6 +26,7 @@ images = [
   {directory: 'docker-busybox', name: 'busybox'},
   {directory: 'docker-easy-rsa', name: 'easy-rsa'},
   {directory: 'docker-mariadb', name: 'mariadb'},
+  {directory: 'docker-restic', name: 'restic'},
 ]
 
 dependencies = {}
