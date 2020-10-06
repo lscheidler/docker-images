@@ -7,4 +7,7 @@ resources:
     destination_file: restic.bz2
     checksum_type: sha256
     checksum: "{{ restic_source_sha256 }}"
-    #unarchive: true
+    bunzip2: true
+    chmod:
+      - path: restic
+        mode: "0755"

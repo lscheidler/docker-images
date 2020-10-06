@@ -2,43 +2,7 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: "download {{ resource.name }}"
-      get_url:
-        url: "{{ resource.url }}"
-        dest: "{{ working_directory }}/{{ resource.destination_file }}"
-        checksum: "{{ resource.checksum_type }}:{{ resource.checksum }}"
-      loop: "{{ resources }}"
-      loop_control:
-        loop_var: resource
-      when: resource.checksum is defined
-    - name: "download {{ resource.name }}"
-      get_url:
-        url: "{{ resource.url }}"
-        dest: "{{ working_directory }}/{{ resource.destination_file }}"
-      loop: "{{ resources }}"
-      loop_control:
-        loop_var: resource
-      when: resource.checksum is undefined
-    - name: strip files from archive
-      shell: "cat {{ working_directory }}/{{ resource.destination_file }} | {{ resource.uncompress_command | default(uncompress_command) }} | tar --delete --wildcards {{ resource.delete }} | {{ resource.compress_command | default(compress_command) }} > {{ working_directory }}/{{ resource.destination_file | regex_replace('\\.([a-z.]*)', '-small.\\1') }}"
-      when: resource.delete is defined
-      loop: "{{ resources }}"
-      loop_control:
-        loop_var: resource
-    - name: create destination directory
-      file:
-        path: "{{ working_directory }}/{{ resource.destination | default('') }}"
-        state: directory
-      when: resource.destination is defined and resource.unarchive is defined and resource.unarchive
-      loop: "{{ resources }}"
-      loop_control:
-        loop_var: resource
-    - name: unarchive resource
-      unarchive:
-        src: "{{ working_directory }}/{{ resource.destination_file }}"
-        dest: "{{ working_directory }}/{{ resource.destination | default('') }}"
-        exclude: "{{ resource.exclude | default(omit) }}"
-      when: resource.unarchive is defined and resource.unarchive
+    - include_tasks: get-resource.yml
       loop: "{{ resources }}"
       loop_control:
         loop_var: resource
