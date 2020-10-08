@@ -1,0 +1,5 @@
+require_relative '../rake/helper'
+
+image :openjdk11 do
+  @distribution = ENV["distribution"] || "buster"
+end

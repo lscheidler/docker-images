@@ -27,6 +27,9 @@ images = [
   {directory: 'docker-easy-rsa', name: 'easy-rsa'},
   {directory: 'docker-mariadb', name: 'mariadb'},
   {directory: 'docker-restic', name: 'restic'},
+  {directory: 'docker-openjdk11', name: 'openjdk11'},
+  {directory: 'docker-gradle', name: 'gradle'},
+  {directory: 'docker-maven', name: 'maven'},
 ]
 
 dependencies = {}
