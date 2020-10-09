@@ -17,7 +17,6 @@ RUN apt-get update; \
 COPY files/tomcat-wrapper /data/app/wrapper/app/bin/
 COPY files/context.xml files/logging.properties files/server.xml files/web.xml files/wrapper.conf files/jmxtrans-agent.xml /data/app/wrapper/app/conf/
 COPY files/defaults /etc/default/app
-COPY newrelic-agent.jar /opt/newrelic-agent.jar
 
 RUN addgroup --gid 1025 app ;\
     adduser --home /data/app --uid 1025 --gid 1025 --disabled-password --disabled-login --gecos '' app ;\
