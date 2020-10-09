@@ -20,4 +20,8 @@ RUN addgroup --gid ${USER_UID} user ;\
 
 USER user
 
-WORKDIR /home/user
+RUN mkdir /home/user/.gradle
+VOLUME /home/user/.gradle
+
+WORKDIR /home/user/workspace
+ENTRYPOINT ["/usr/bin/gradle", "--no-daemon"]

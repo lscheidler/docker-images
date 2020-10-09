@@ -20,4 +20,8 @@ RUN addgroup --gid ${USER_UID} user ;\
 
 USER user
 
-WORKDIR /home/user
+RUN mkdir /home/user/.m2
+VOLUME /home/user/.m2
+
+WORKDIR /home/user/workspace
+ENTRYPOINT ["/usr/bin/mvn"]
