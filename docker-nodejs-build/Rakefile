@@ -1,0 +1,5 @@
+require_relative '../rake/helper'
+
+image :"nodejs-build" do
+  @distribution = ENV["distribution"] || "buster"
+end

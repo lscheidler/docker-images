@@ -5,6 +5,7 @@ def images
     {directory: 'docker-tomcat8', name: 'tomcat8'},
     {directory: 'docker-service-wrapper', name: 'service-wrapper'},
     {directory: 'docker-nodejs', name: 'nodejs'},
+    {directory: 'docker-nodejs-build', name: 'nodejs-build'},
     {directory: 'docker-ruby', name: 'ruby'},
     {directory: 'docker-solr', name: 'solr'},
     {directory: 'docker-jar', name: 'jar'},
