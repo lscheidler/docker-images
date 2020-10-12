@@ -28,6 +28,7 @@ def images
     {directory: 'docker-gradle', name: 'gradle-openjdk8', parameter: "distribution=stretch variant=openjdk8"},
     {directory: 'docker-gradle', name: 'gradle-openjfx', parameter: "variant=openjfx"},
     {directory: 'docker-maven', name: 'maven'},
+    {directory: 'docker-maven', name: 'maven-openjdk8', parameter: "distribution=stretch variant=openjdk8"},
     {directory: 'docker-maven', name: 'maven-openjfx', parameter: "variant=openjfx"},
   ]
 end
