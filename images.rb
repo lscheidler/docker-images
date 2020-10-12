@@ -25,6 +25,7 @@ def images
     {directory: 'docker-openjdk11', name: 'openjdk11'},
     {directory: 'docker-openjfx', name: 'openjfx'},
     {directory: 'docker-gradle', name: 'gradle'},
+    {directory: 'docker-gradle', name: 'gradle-openjdk8', parameter: "distribution=stretch variant=openjdk8"},
     {directory: 'docker-gradle', name: 'gradle-openjfx', parameter: "variant=openjfx"},
     {directory: 'docker-maven', name: 'maven'},
     {directory: 'docker-maven', name: 'maven-openjfx', parameter: "variant=openjfx"},
