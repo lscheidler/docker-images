@@ -23,7 +23,10 @@ def images
     {directory: 'docker-mariadb', name: 'mariadb'},
     {directory: 'docker-restic', name: 'restic'},
     {directory: 'docker-openjdk11', name: 'openjdk11'},
+    {directory: 'docker-openjfx', name: 'openjfx'},
     {directory: 'docker-gradle', name: 'gradle'},
+    {directory: 'docker-gradle', name: 'gradle-openjfx', parameter: "variant:openjfx"},
     {directory: 'docker-maven', name: 'maven'},
+    {directory: 'docker-maven', name: 'maven-openjfx', parameter: "variant=openjfx"},
   ]
 end

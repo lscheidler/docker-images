@@ -2,4 +2,10 @@ require_relative '../rake/helper'
 
 image :gradle do
   @distribution = ENV["distribution"] || "buster"
+  @variant = ENV["variant"] || @variant || "openjdk11"
+
+  if @variant != "openjdk11"
+    @docker_build_args = "#{@docker_build_args} --build-arg VARIANT=#{@variant}"
+    @name = @name.to_s + "-" + @variant
+  end
 end
