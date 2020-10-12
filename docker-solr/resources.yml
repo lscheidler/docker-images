@@ -1,6 +1,6 @@
 solr_version: 8.6.3
 solr_mirror: https://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/dist/lucene/solr
-solr_checksum: 690ad5c5dcdabf058b2112a2d16c983b3dafc0b2aea03e96ccb13ec3f5b72ea6b70a57c307a402ece9efd5b2046244b0991a04b4c3da13ab3e3884ee73da5f24
+solr_checksum: f040d4489118b655bd27451a717c1f22f180c398638d944a53889a1a449e7032b016cecbff1979c2e8bfd51fc037dd613f3b968254001d34fe0e8fc4f6761dcf
 
 resources:
   - name: solr
