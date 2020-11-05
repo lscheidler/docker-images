@@ -49,6 +49,15 @@ images.each do |image_data|
         sh "ansible-playbook ../get-resources.yml -e @resources.yml -e working_directory=#{Dir.pwd}"
       end
     end
+
+    dependencies["clean"] ||= {comment: "delete dist directories", tasks: []}
+    dependencies["clean"][:tasks] << "#{image_name}:clean"
+    desc "[#{image_name}] delete dist directory"
+    task "#{image_name}:clean" do
+      Dir.chdir(directory) do
+        rm_rf "dist/"
+      end
+    end
   end
 end
 

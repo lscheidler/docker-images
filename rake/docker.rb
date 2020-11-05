@@ -27,6 +27,11 @@ if File.exist? "resources.yml"
   task :get do
     sh "ansible-playbook ../get-resources.yml -e @resources.yml -e working_directory=#{Dir.pwd}"
   end
+
+  desc "delete dist directory"
+  task :clean do
+    rm_rf "dist/"
+  end
 end
 
 desc "Run default tasks for distribution stretch"

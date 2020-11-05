@@ -1,35 +1,40 @@
 ---
+- name: create destination directory
+  file:
+    path: "{{ working_directory }}/{{ resource.destination_directory | default('dist') }}"
+    state: directory
+
 - name: "download {{ resource.name }}"
   get_url:
     url: "{{ resource.url }}"
-    dest: "{{ working_directory }}/{{ resource.destination_file }}"
+    dest: "{{ working_directory }}/{{ resource.destination_directory | default('dist') }}/{{ resource.destination_file }}"
     checksum: "{{ resource.checksum_type }}:{{ resource.checksum }}"
   when: resource.checksum is defined
 
 - name: "download {{ resource.name }}"
   get_url:
     url: "{{ resource.url }}"
-    dest: "{{ working_directory }}/{{ resource.destination_file }}"
+    dest: "{{ working_directory }}/{{ resource.destination_directory | default('dist') }}/{{ resource.destination_file }}"
   when: resource.checksum is undefined
 
 - name: strip files from archive
-  shell: "cat {{ working_directory }}/{{ resource.destination_file }} | {{ resource.uncompress_command | default(uncompress_command) }} | tar --delete --wildcards {{ resource.delete }} | {{ resource.compress_command | default(compress_command) }} > {{ working_directory }}/{{ resource.destination_file | regex_replace('\\.([a-z.]*)', '-small.\\1') }}"
+  shell: "cat {{ working_directory }}/{{ resource.destination_directory | default('dist') }}/{{ resource.destination_file }} | {{ resource.uncompress_command | default(uncompress_command) }} | tar --delete --wildcards {{ resource.delete }} | {{ resource.compress_command | default(compress_command) }} > {{ working_directory }}/{{ resource.destination_directory | default('dist') }}/{{ resource.destination_file | regex_replace('\\.([a-z.]*)', '-small.\\1') }}"
   when: resource.delete is defined
 
 - name: create destination directory
   file:
-    path: "{{ working_directory }}/{{ resource.destination | default('') }}"
+    path: "{{ working_directory }}/{{ resource.destination | default('dist') }}"
     state: directory
   when: resource.destination is defined and resource.unarchive is defined and resource.unarchive
 - name: unarchive resource
   unarchive:
-    src: "{{ working_directory }}/{{ resource.destination_file }}"
-    dest: "{{ working_directory }}/{{ resource.destination | default('') }}"
+    src: "{{ working_directory }}/{{ resource.destination_directory | default('dist') }}/{{ resource.destination_file }}"
+    dest: "{{ working_directory }}/{{ resource.destination | default('dist') }}"
     exclude: "{{ resource.exclude | default(omit) }}"
   when: resource.unarchive is defined and resource.unarchive
 
 - name: bunzip2 resource
-  command: "bunzip2 -fk {{ working_directory }}/{{ resource.destination_file }}"
+  command: "bunzip2 -fk {{ working_directory }}/{{ resource.destination_directory | default('dist') }}/{{ resource.destination_file }}"
   when: resource.bunzip2 is defined and resource.bunzip2
 
 - name: chmod resource files

@@ -13,7 +13,7 @@ RUN apt-get update; \
     rm -rf /var/cache/debconf/*-old; \
     localepurge
 
-ADD solr-small.tgz /opt
+ADD dist/solr-small.tgz /opt
 
 RUN rm -rf /opt/solr*/dist /opt/solr*/contrib /opt/solr*/example; \
     ln -s /opt/solr* /opt/solr

@@ -5,7 +5,7 @@ resources:
   - name: mailslurper
     url: "https://github.com/mailslurper/mailslurper/releases/download/{{ mailslurper_version }}/mailslurper-{{ mailslurper_version }}-linux.zip"
     destination_file: mailslurper.zip
-    destination: mailslurper
+    destination: dist/mailslurper
     checksum_type: sha256
     checksum: "{{ mailslurper_source_sha256 }}"
     unarchive: true

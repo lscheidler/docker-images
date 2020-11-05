@@ -3,7 +3,7 @@ ARG  CODE_VERSION=latest
 ARG  DISTRIBUTION=buster
 FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 
-ADD vault /usr/local/bin/
+ADD dist/vault /usr/local/bin/
 COPY files/run /usr/local/bin/run
 
 ARG USER_UID=1000

@@ -13,7 +13,7 @@ FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 #    rm -rf /var/cache/debconf/*-old; \
 #    localepurge
 
-COPY restic /usr/local/bin/restic
+COPY dist/restic /usr/local/bin/restic
 
 VOLUME /data
 VOLUME /backup

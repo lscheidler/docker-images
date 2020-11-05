@@ -13,7 +13,7 @@ RUN apt-get update; \
     rm -rf /var/cache/debconf/*-old; \
     localepurge
 
-ADD tomcat7-small.tar.gz /opt
+ADD dist/tomcat7-small.tar.gz /opt
 
 # fix permissions
 RUN find /opt -type f | xargs chmod go+r ;\
