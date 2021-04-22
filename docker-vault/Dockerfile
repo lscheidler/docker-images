@@ -3,7 +3,18 @@ ARG  CODE_VERSION=latest
 ARG  DISTRIBUTION=buster
 FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 
-ADD dist/vault /usr/local/bin/
+COPY files/hashicorp-vault-archive.gpg /etc/apt/trusted.gpg.d/
+COPY files/vault.list /etc/apt/sources.list.d/
+
+RUN apt-get update; \
+    apt-get install --no-install-recommends -y vault; \
+    apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y; \
+    find /var/cache/apt -type f | xargs rm -f; \
+    find /var/lib/apt/lists -type f | xargs rm -f; \
+    find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
+    rm -rf /var/cache/debconf/*-old; \
+    localepurge
+
 COPY files/run /usr/local/bin/run
 
 ARG USER_UID=1000
