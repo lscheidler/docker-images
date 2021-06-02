@@ -4,6 +4,8 @@ task default: [:stretch]
 
 distribution :stretch
 distribution :buster
+distribution :bullseye
+distribution :testing
 
 require_relative "images"
 

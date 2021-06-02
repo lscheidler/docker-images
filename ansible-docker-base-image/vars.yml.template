@@ -1,8 +1,18 @@
 temporary_directory: /var/tmp
 remote_repository: <REMOTE_REPOSITORY_ADDRESS>
 included_packages:
-  - apt-transport-https
-  - ca-certificates
-  - python
+  common:
+    - apt-transport-https
+    - ca-certificates
+  stretch:
+    - python
+  buster:
+    - python3
+  bullseye:
+    - ca-certificates
+    - python3
+  testing:
+    - ca-certificates
+    - python3
 chroot_included_packages:
   - localepurge

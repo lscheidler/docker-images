@@ -19,11 +19,12 @@
     - name: include variables
       include_vars: vars.yml
     - name: "generate chroot cache in {{ temporary_directory }}/debian-{{ distribution }}"
-      command: "debootstrap --variant=minbase --include={{ included_packages | join(',') }} {{ distribution }} {{ temporary_directory }}/debian-{{ distribution }}"
+      command: "debootstrap --variant=minbase --include={{ [ included_packages['common'] | join(','), included_packages[distribution] | default([]) | join(',')] | join(',') }} {{ distribution }} {{ temporary_directory }}/debian-{{ distribution }}"
       args: 
         creates: "{{ temporary_directory }}/debian-{{ distribution }}"
       register: debootstrap
-    - debug: var=temporary_directory
+    - debug:
+        var: temporary_directory
     - name: register chroot
       add_host:
         hostname: "{{ temporary_directory }}/debian-{{ distribution }}"
@@ -54,6 +55,16 @@
       shell: echo 'debconf localepurge/nopurge multiselect en en_US en_US.UTF-8 de de_DE de_DE.UTF-8' | debconf-set-selections
     - name: set localepurge/use-dpkg-feature
       shell: echo 'debconf localepurge/use-dpkg-feature select false' | debconf-set-selections
+    - name: install packages
+      apt:
+        name: "{{ included_packages['common'] }}"
+        state: present
+        install_recommends: no
+    - name: install distribution packages
+      apt:
+        name: "{{ included_packages[distribution] }}"
+        state: present
+        install_recommends: no
     - name: copy apt.conf.d/ configs
       copy:
         src: "files/apt.conf.d/{{ item }}"
@@ -62,9 +73,10 @@
         - 50cleanup
         - 50norecommends
     - name: install packages
-      apt: name="{{ included_packages }}" state=present install_recommends=no
-    - name: install packages
-      apt: name="{{ chroot_included_packages }}" state=present install_recommends=no
+      apt:
+        name: "{{ chroot_included_packages }}"
+        state: present
+        install_recommends: no
     - block:
         - name: run localepurge
           command: localepurge
