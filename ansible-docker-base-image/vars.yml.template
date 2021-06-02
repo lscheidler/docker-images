@@ -7,6 +7,8 @@ included_packages:
   stretch:
     - python
   buster:
+    # needed for ansible < 2.8
+    - python
     - python3
   bullseye:
     - ca-certificates
