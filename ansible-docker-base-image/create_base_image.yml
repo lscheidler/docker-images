@@ -41,6 +41,10 @@
         dest: /etc/apt/sources.list
         backup: yes
       register: updated_sources_list
+    - name: copy dpkg.d config
+      copy:
+        src: files/dpkg.cfg.d/docker
+        dest: /etc/dpkg/dpkg.cfg.d/docker
     - name: set cache_valid_time == 0
       set_fact:
         cache_valid_time: 0
@@ -51,10 +55,6 @@
         update_cache: yes
         upgrade: full
       register: chroot_update
-    - name: set localepurge/nopurge
-      shell: echo 'debconf localepurge/nopurge multiselect en en_US en_US.UTF-8 de de_DE de_DE.UTF-8' | debconf-set-selections
-    - name: set localepurge/use-dpkg-feature
-      shell: echo 'debconf localepurge/use-dpkg-feature select false' | debconf-set-selections
     - name: install packages
       apt:
         name: "{{ included_packages['common'] }}"
@@ -78,14 +78,12 @@
         state: present
         install_recommends: no
     - block:
-        - name: run localepurge
-          command: localepurge
         - name: remove downloaded packages
           shell: find /var/cache/apt -type f | xargs rm -f
         - name: remove apt lists
           shell: find /var/lib/apt/lists -type f | xargs rm -f
-        - name: remove docs
-          shell: find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf
+        - name: cleanup
+          shell: eval find / -depth -mindepth 1 \\\( $(sed -e "/^#/d" -e "/^$/d" /etc/dpkg/dpkg.cfg.d/docker |grep exclude | cut -d " " -f 2| sed -e "s/^\(.*\)$/-path '\1' -o/g") -path /nonexist \\\)  -not \\\( -type d -o -type l \\\) -not \\\( $(sed -e "/^#/d" -e "/^$/d" /etc/dpkg/dpkg.cfg.d/docker |grep include | cut -d " " -f 2| sed -e "s/^\(.*\)$/-path '\1' -o/g") -path /nonexist \\\) | xargs rm -f
 
 - hosts: localhost
   connection: local

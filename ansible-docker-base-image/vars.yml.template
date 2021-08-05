@@ -8,7 +8,7 @@ included_packages:
     - python
   buster:
     # needed for ansible < 2.8
-    - python
+    #- python
     - python3
   bullseye:
     - ca-certificates
@@ -16,5 +16,4 @@ included_packages:
   testing:
     - ca-certificates
     - python3
-chroot_included_packages:
-  - localepurge
+chroot_included_packages: []
