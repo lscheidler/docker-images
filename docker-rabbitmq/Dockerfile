@@ -12,8 +12,7 @@ RUN apt-get update; \
     find /var/cache/apt -type f | xargs rm -f; \
     find /var/lib/apt/lists -type f | xargs rm -f; \
     find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
-    rm -rf /var/cache/debconf/*-old; \
-    localepurge
+    rm -rf /var/cache/debconf/*-old
 
 COPY files/enabled_plugins /etc/rabbitmq/enabled_plugins
 COPY files/rabbitmq.config /etc/rabbitmq/rabbitmq.config

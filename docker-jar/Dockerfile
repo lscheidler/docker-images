@@ -14,8 +14,7 @@ RUN apt-get update; \
     find /var/cache/apt -type f | xargs rm -f; \
     find /var/lib/apt/lists -type f | xargs rm -f; \
     find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
-    rm -rf /var/cache/debconf/*-old; \
-    localepurge
+    rm -rf /var/cache/debconf/*-old
 
 RUN addgroup --gid 1025 app ;\
     adduser --home /data/app --uid 1025 --gid 1025 --disabled-password --disabled-login --gecos '' app ;\

@@ -10,8 +10,7 @@ RUN apt-get update; \
     find /var/cache/apt -type f | xargs rm -f; \
     find /var/lib/apt/lists -type f | xargs rm -f; \
     find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
-    rm -rf /var/cache/debconf/*-old; \
-    localepurge
+    rm -rf /var/cache/debconf/*-old
 
 RUN rm -f /etc/nginx/sites-enabled/*
 

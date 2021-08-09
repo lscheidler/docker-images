@@ -11,8 +11,7 @@ RUN apt-get update; \
     find /var/cache/apt -type f | xargs rm -f; \
     find /var/lib/apt/lists -type f | xargs rm -f; \
     find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
-    rm -rf /var/cache/debconf/*-old; \
-    localepurge
+    rm -rf /var/cache/debconf/*-old
 
 COPY files/tomcat-wrapper /data/app/wrapper/app/bin/
 COPY files/context.xml files/logging.properties files/server.xml files/web.xml files/wrapper.conf files/jmxtrans-agent.xml /data/app/wrapper/app/conf/

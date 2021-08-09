@@ -37,8 +37,6 @@
         update_cache: yes
         upgrade: full
     - block:
-        - name: run localepurge
-          command: localepurge
         - name: remove downloaded packages
           shell: find /var/cache/apt -type f | xargs rm -f
         - name: remove apt lists

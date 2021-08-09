@@ -2,4 +2,3 @@ DPkg::Post-Invoke {"find /var/cache/apt -type f | xargs rm -f";};
 DPkg::Post-Invoke {"find /var/lib/apt/lists -type f | xargs rm -f";};
 DPkg::Post-Invoke {"find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf";};
 DPkg::Post-Invoke {"rm -rf /var/cache/debconf/*-old";};
-DPkg::Post-Invoke {"localepurge";};

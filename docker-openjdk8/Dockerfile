@@ -11,8 +11,7 @@ RUN apt-get update; \
     find /var/cache/apt -type f | xargs rm -f; \
     find /var/lib/apt/lists -type f | xargs rm -f; \
     find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
-    rm -rf /var/cache/debconf/*-old; \
-    localepurge
+    rm -rf /var/cache/debconf/*-old
 
 RUN echo LANG="en_US.UTF-8" >> /etc/default/locale ;\
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen ;\
