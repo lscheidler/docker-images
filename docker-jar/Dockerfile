@@ -16,8 +16,9 @@ RUN apt-get update; \
     find /usr/share/doc -mindepth 1 -maxdepth 1 | xargs rm -rf; \
     rm -rf /var/cache/debconf/*-old
 
-RUN addgroup --gid 1025 app ;\
-    adduser --home /data/app --uid 1025 --gid 1025 --disabled-password --disabled-login --gecos '' app ;\
+ARG USER_UID=1000
+RUN addgroup --gid ${USER_UID} app ;\
+    adduser --home /data/app --uid ${USER_UID} --gid ${USER_UID} --disabled-password --disabled-login --gecos '' app ;\
     chown app. -R /data/app
 
 USER app

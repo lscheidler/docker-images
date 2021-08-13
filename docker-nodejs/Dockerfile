@@ -1,6 +1,7 @@
 ARG  LOCAL_REPOSITORY=local
 ARG  CODE_VERSION=latest
-FROM ${LOCAL_REPOSITORY}:debian-stretch-${CODE_VERSION}
+ARG  DISTRIBUTION=stretch
+FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 
 COPY files/nodesource.list /etc/apt/sources.list.d/nodesource.list
 COPY files/nodesource.gpg /etc/apt/trusted.gpg.d/nodesource.gpg
@@ -17,8 +18,9 @@ RUN apt-get update; \
 
 VOLUME /data/app/data/app
 
-RUN addgroup --gid 1025 app ;\
-    adduser --home /data/app --uid 1025 --gid 1025 --disabled-password --disabled-login --gecos '' app ;\
+ARG USER_UID=1000
+RUN addgroup --gid ${USER_UID} app ;\
+    adduser --home /data/app --uid ${USER_UID} --gid ${USER_UID} --disabled-password --disabled-login --gecos '' app ;\
     chown app. -R /data/app/
 
 USER app

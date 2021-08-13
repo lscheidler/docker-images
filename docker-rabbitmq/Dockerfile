@@ -3,8 +3,9 @@ ARG  CODE_VERSION=latest
 ARG  DISTRIBUTION=buster
 FROM ${LOCAL_REPOSITORY}:debian-${DISTRIBUTION}-${CODE_VERSION}
 
-RUN addgroup --gid 1025 rabbitmq ;\
-    adduser --home /var/lib/rabbitmq --uid 1025 --gid 1025 --disabled-password --disabled-login --gecos '' rabbitmq
+ARG USER_UID=1000
+RUN addgroup --gid ${USER_UID} rabbitmq ;\
+    adduser --home /var/lib/rabbitmq --uid ${USER_UID} --gid ${USER_UID} --disabled-password --disabled-login --gecos '' rabbitmq
 
 RUN apt-get update; \
     apt-get install -y rabbitmq-server jq pwgen; \
