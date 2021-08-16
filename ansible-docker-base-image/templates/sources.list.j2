@@ -1,10 +1,17 @@
 deb https://deb.debian.org/debian {{ distribution }} main
 deb-src https://deb.debian.org/debian {{ distribution }} main
 
-{% if distribution not in ["testing", "unstable"] %}
+{% if distribution in ["stretch", "buster"] %}
 deb https://deb.debian.org/debian-security {{ distribution }}/updates main
 deb-src https://deb.debian.org/debian-security {{ distribution }}/updates main
+{% endif %}
 
+{% if distribution not in ["stretch", "buster", "testing", "unstable"] %}
+deb https://deb.debian.org/debian-security {{ distribution }}-security main
+deb-src https://deb.debian.org/debian-security {{ distribution }}-security main
+{% endif %}
+
+{% if distribution not in ["testing", "unstable"] %}
 # {{ distribution }}-updates, previously known as 'volatile'
 deb https://deb.debian.org/debian {{ distribution }}-updates main
 deb-src https://deb.debian.org/debian {{ distribution }}-updates main
