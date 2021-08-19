@@ -1,6 +1,7 @@
 def images 
   [
     {directory: 'docker-openjdk8', name: 'openjdk8'},
+    {directory: 'docker-openjdk11', name: 'openjdk11'},
     {directory: 'docker-jmxtrans-agent', name: 'jmxtrans-agent'},
     {directory: 'docker-tomcat8', name: 'tomcat8'},
     {directory: 'docker-service-wrapper', name: 'service-wrapper'},
@@ -22,7 +23,6 @@ def images
     {directory: 'docker-easy-rsa', name: 'easy-rsa'},
     {directory: 'docker-mariadb', name: 'mariadb'},
     {directory: 'docker-restic', name: 'restic'},
-    {directory: 'docker-openjdk11', name: 'openjdk11'},
     {directory: 'docker-openjfx', name: 'openjfx'},
     {directory: 'docker-gradle', name: 'gradle'},
     {directory: 'docker-gradle', name: 'gradle-openjdk8', parameter: "distribution=stretch variant=openjdk8"},

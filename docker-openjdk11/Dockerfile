@@ -16,6 +16,6 @@ RUN apt-get update; \
 RUN echo LANG="en_US.UTF-8" >> /etc/default/locale ;\
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen ;\
     dpkg-reconfigure -u -f noninteractive locales ;\
-    sed -i -e "s/^\(assistive_technologies\)/#\1/g" /etc/java-*-openjdk/accessibility.properties
+    sed -i -e "s/^\(assistive_technologies\)/#\1/g" /etc/java-*-openjdk*/accessibility.properties
 
 ENV LANG=en_US.UTF-8
