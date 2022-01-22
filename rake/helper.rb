@@ -1,6 +1,8 @@
+require_relative 'config'
+
 def image name, &block
   @namespace = namespace name do |namespace|
-    require_relative '../rake/docker'
+    require_relative 'container'
   
     @name = name
 
@@ -21,29 +23,27 @@ def image name, &block
   end
 end
 
-def distribution suite
+def distribution suite, type="debian"
   desc "update images for #{suite}"
   task suite => ["#{suite}:update"]
 
-  desc "create base image for #{suite}"
+  desc "create base image for #{type}-#{suite}"
   task "base_image:#{suite}:create" do
-    #sh "sudo -E make -C ansible-docker-base-image #{suite}"
     Dir.chdir("ansible-docker-base-image") do
-      sh "rake distribution=#{suite}"
+      sh "rake distribution=#{suite} type=#{type}"
     end
   end
 
-  desc "update base image for #{suite}"
+  desc "update base image for #{type}-#{suite}"
   task "base_image:#{suite}:update" do
-    #sh "make -C ansible-docker-update-image buster-update"
     Dir.chdir("ansible-docker-update-image") do
-      sh "rake distribution=#{suite}"
+      sh "rake distribution=#{suite} type=#{type}"
     end
   end
 
-  desc "update images for #{suite}"
+  desc "update images for #{type}-#{suite}"
   task "#{suite}:update" do
-    @rake_parameters = "distribution=#{suite}"
+    @rake_parameters = "distribution=#{suite} type=#{type}"
     Rake::Task[:update].invoke
   end
 end

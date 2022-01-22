@@ -1,4 +1,4 @@
-# Copyright 2018 Lars Eric Scheidler
+# Copyright 2022 Lars Eric Scheidler
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,72 +18,22 @@
   tasks:
     - name: include variables
       include_vars: vars.yml
-    - name: "generate chroot cache in {{ temporary_directory }}/debian-{{ distribution }}"
-      command: "debootstrap --variant=minbase --include={{ [ included_packages['common'] | join(','), included_packages[distribution] | default([]) | join(',')] | join(',') }} {{ distribution }} {{ temporary_directory }}/debian-{{ distribution }}"
+    - name: "pre"
+      include_tasks: "tasks/{{ backend | default('docker') }}-pre.yml"
+    - name: "generate chroot cache in {{ debootstrap_directory }}"
+      command: "{{ debootstrap_command | default('debootstrap') }} --variant=minbase --include={{ [ included_packages['common'] | join(','), included_packages[distribution] | default([]) | join(',')] | join(',') }} {{ distribution }} {{ debootstrap_directory }}"
       args: 
-        creates: "{{ temporary_directory }}/debian-{{ distribution }}"
+        creates: "{{ debootstrap_directory }}/bin"
       register: debootstrap
-    - debug:
-        var: temporary_directory
-    - name: register chroot
-      add_host:
-        hostname: "{{ temporary_directory }}/debian-{{ distribution }}"
-        groups: chroots
+    - add_host:
+        hostname: '{{ chroot_hostname }}'
+        ansible_connection: '{{ ansible_chroot_backend }}'
+        groups:
+          - chroots
 
 - hosts: chroots
-  connection: chroot
   tasks:
-    - name: include variables
-      include_vars: vars.yml
-    - name: generate sources.list
-      template: 
-        src: templates/sources.list.j2
-        dest: /etc/apt/sources.list
-        backup: yes
-      register: updated_sources_list
-    - name: copy dpkg.d config
-      copy:
-        src: files/dpkg.cfg.d/docker
-        dest: /etc/dpkg/dpkg.cfg.d/docker
-    - name: set cache_valid_time == 0
-      set_fact:
-        cache_valid_time: 0
-      when: updated_sources_list is changed or force | default(false) | bool
-    - name: "update chroot"
-      apt:
-        cache_valid_time: "{{ cache_valid_time | default(300) }}"
-        update_cache: yes
-        upgrade: full
-      register: chroot_update
-    - name: install packages
-      apt:
-        name: "{{ included_packages['common'] }}"
-        state: present
-        install_recommends: no
-    - name: install distribution packages
-      apt:
-        name: "{{ included_packages[distribution] }}"
-        state: present
-        install_recommends: no
-    - name: copy apt.conf.d/ configs
-      copy:
-        src: "files/apt.conf.d/{{ item }}"
-        dest: "/etc/apt/apt.conf.d/{{ item }}"
-      loop:
-        - 50cleanup
-        - 50norecommends
-    - name: install packages
-      apt:
-        name: "{{ chroot_included_packages }}"
-        state: present
-        install_recommends: no
-    - block:
-        - name: remove downloaded packages
-          shell: find /var/cache/apt -type f | xargs rm -f
-        - name: remove apt lists
-          shell: find /var/lib/apt/lists -type f | xargs rm -f
-        - name: cleanup
-          shell: eval find / -depth -mindepth 1 \\\( $(sed -e "/^#/d" -e "/^$/d" /etc/dpkg/dpkg.cfg.d/docker |grep exclude | cut -d " " -f 2| sed -e "s/^\(.*\)$/-path '\1' -o/g") -path /nonexist \\\)  -not \\\( -type d -o -type l \\\) -not \\\( $(sed -e "/^#/d" -e "/^$/d" /etc/dpkg/dpkg.cfg.d/docker |grep include | cut -d " " -f 2| sed -e "s/^\(.*\)$/-path '\1' -o/g") -path /nonexist \\\) | xargs rm -f
+    - include_tasks: tasks/chroot.yml
 
 - hosts: localhost
   connection: local
@@ -91,32 +41,12 @@
     - block:
         - set_fact:
             timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
-            src_name: "debian-{{ distribution }}"
+            src_name: "{{ type }}-{{ distribution }}"
     - name: include variables
       include_vars: vars.yml
-    - name: register chroot_path
-      set_fact:
-        chroot_path: "{{ temporary_directory }}/debian-{{ distribution }}"
     - name: register chroot_host
       set_fact:
-        chroot_host: '{{ hostvars[chroot_path] }}'
+        chroot_host: '{{ hostvars[chroot_hostname] }}'
     - block:
-        - name: "create archive"
-          command: "tar cf {{ chroot_path }}.tar -C {{ chroot_path }} ."
-          args:
-            warn: False
-        - name: "create docker base image for {{ distribution }}"
-          command: "docker import {{ chroot_path }}.tar {{ local_repository }}:{{ src_name }}-latest"
-        - name: "tag docker base image"
-          command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ local_repository }}:{{ src_name }}-{{ timestamp }}"
-        - block:
-            - name: tag docker base image in remote repository
-              command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:debian-{{ distribution }}-latest"
-            - name: push docker base image into remote repository
-              command: "docker push {{ remote_repository }}:{{ src_name }}-latest"
-            - name: tag docker base image in remote repository
-              command: "docker tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
-            - name: push docker base image into remote repository
-              command: "docker push {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
-          when: remote_repository is defined
+        - include_tasks: "tasks/{{ backend | default('docker') }}-post.yml"
       when: debootstrap is changed or chroot_host.chroot_update is changed or force | default('no') | bool

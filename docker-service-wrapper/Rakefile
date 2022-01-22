@@ -2,7 +2,7 @@ require_relative '../rake/helper'
 
 image "service-wrapper" do
   @tomcat = ENV["tomcat"] || "tomcat8"
-  @docker_build_args = "#{@docker_build_args} --build-arg TOMCAT=#{@tomcat}"
+  @container_build_args = "#{@container_build_args} --build-arg TOMCAT=#{@tomcat}"
   if @tomcat != "tomcat8"
     @name += "-" + @tomcat
   end

@@ -1,9 +1,8 @@
 require_relative "rake/helper"
 
-task default: [:stretch]
+task default: [:bullseye]
 
-distribution :stretch
-distribution :buster
+distribution :bionic, :ubuntu
 distribution :bullseye
 distribution :testing
 

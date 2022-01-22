@@ -1,0 +1,68 @@
+
+# Copyright 2022 Lars Eric Scheidler
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: include variables
+  include_vars: vars.yml
+- name: generate sources.list
+  template: 
+    src: templates/sources.list.j2
+    dest: /etc/apt/sources.list
+    backup: yes
+  register: updated_sources_list
+  when: type is match("debian")
+- name: copy dpkg.d config
+  copy:
+    src: files/dpkg.cfg.d/docker
+    dest: /etc/dpkg/dpkg.cfg.d/docker
+- name: set cache_valid_time == 0
+  set_fact:
+    cache_valid_time: 0
+  when: updated_sources_list is changed or force | default(false) | bool
+- name: "update chroot"
+  apt:
+    cache_valid_time: "{{ cache_valid_time | default(300) }}"
+    update_cache: yes
+    upgrade: full
+  register: chroot_update
+- name: install packages
+  apt:
+    name: "{{ included_packages['common'] }}"
+    state: present
+    install_recommends: no
+- name: install distribution packages
+  apt:
+    name: "{{ included_packages[distribution] }}"
+    state: present
+    install_recommends: no
+- name: copy apt.conf.d/ configs
+  copy:
+    src: "files/apt.conf.d/{{ item }}"
+    dest: "/etc/apt/apt.conf.d/{{ item }}"
+  loop:
+    - 50cleanup
+    - 50norecommends
+- name: install packages
+  apt:
+    name: "{{ chroot_included_packages }}"
+    state: present
+    install_recommends: no
+- block:
+    - name: remove downloaded packages
+      shell: find /var/cache/apt -type f | xargs rm -f
+    - name: remove apt lists
+      shell: find /var/lib/apt/lists -type f | xargs rm -f
+    - name: cleanup
+      shell: eval find / -depth -mindepth 1 \\\( $(sed -e "/^#/d" -e "/^$/d" /etc/dpkg/dpkg.cfg.d/docker |grep exclude | cut -d " " -f 2| sed -e "s/^\(.*\)$/-path '\1' -o/g") -path /nonexist \\\)  -not \\\( -type d -o -type l \\\) -not \\\( $(sed -e "/^#/d" -e "/^$/d" /etc/dpkg/dpkg.cfg.d/docker |grep include | cut -d " " -f 2| sed -e "s/^\(.*\)$/-path '\1' -o/g") -path /nonexist \\\) | xargs rm -f

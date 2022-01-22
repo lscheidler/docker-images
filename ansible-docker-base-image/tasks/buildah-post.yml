@@ -1,0 +1,29 @@
+# Copyright 2022 Lars Eric Scheidler
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: "commit buildah base image for {{ distribution }}"
+  command: "buildah commit {{ local_repository }}:{{ src_name }}-scratch {{ local_repository }}:{{ src_name }}-latest"
+- name: "tag buildah base image"
+  command: "buildah tag {{ local_repository }}:{{ src_name }}-latest {{ local_repository }}:{{ src_name }}-{{ timestamp }}"
+- block:
+    - name: tag buildah base image in remote repository
+      command: "buildah tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:debian-{{ distribution }}-latest"
+    - name: push buildah base image into remote repository
+      command: "buildah push {{ remote_repository }}:{{ src_name }}-latest"
+    - name: tag buildah base image in remote repository
+      command: "buildah tag {{ local_repository }}:{{ src_name }}-latest {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
+    - name: push buildah base image into remote repository
+      command: "buildah push {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
+  when: remote_repository is defined and remote_repository != ""

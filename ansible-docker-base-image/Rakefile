@@ -6,6 +6,12 @@ image :create_base_image do
 
   Rake::Task[:build].clear
   task :build do
-	  sh "sudo -E ansible-playbook create_base_image.yml -e local_repository=#{@local_repository} -e remote_repository=#{@remote_repository} -e distribution=#{@distribution} -e force=true"
+
+    ansible_playbook_args = "-e local_repository=#{@local_repository} -e remote_repository=#{@remote_repository} -e type=#{@type} -e distribution=#{@distribution} -e force=true"
+    if @backend
+      ansible_playbook_args = "-e backend=#{@backend.to_s} #{ansible_playbook_args}"
+    end
+
+    sh "sudo ansible-playbook create_base_image.yml #{@ansible_playbook_common_args} #{ansible_playbook_args}"
   end
 end

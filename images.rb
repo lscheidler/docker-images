@@ -1,9 +1,8 @@
 def images 
   [
-    {directory: 'docker-openjdk8', name: 'openjdk8'},
     {directory: 'docker-openjdk11', name: 'openjdk11'},
     {directory: 'docker-jmxtrans-agent', name: 'jmxtrans-agent'},
-    {directory: 'docker-tomcat8', name: 'tomcat8'},
+    {directory: 'docker-tomcat9', name: 'tomcat9'},
     {directory: 'docker-service-wrapper', name: 'service-wrapper'},
     {directory: 'docker-nodejs', name: 'nodejs'},
     {directory: 'docker-nodejs-build', name: 'nodejs-build'},
@@ -12,8 +11,6 @@ def images
     {directory: 'docker-jar', name: 'jar'},
     {directory: 'docker-influxdb', name: 'influxdb'},
     {directory: 'docker-vault', name: 'vault'},
-    {directory: 'docker-tomcat7', name: 'tomcat7'},
-    {directory: 'docker-service-wrapper', name: 'service-wrapper-tomcat7', parameter: "tomcat=tomcat7"},
     {directory: 'docker-rabbitmq', name: 'rabbitmq'},
     {directory: 'docker-mailslurper', name: 'mailslurper'},
     {directory: 'docker-postgresql', name: 'postgresql'},
@@ -25,10 +22,8 @@ def images
     {directory: 'docker-restic', name: 'restic'},
     {directory: 'docker-openjfx', name: 'openjfx'},
     {directory: 'docker-gradle', name: 'gradle'},
-    {directory: 'docker-gradle', name: 'gradle-openjdk8', parameter: "distribution=stretch variant=openjdk8"},
     {directory: 'docker-gradle', name: 'gradle-openjfx', parameter: "variant=openjfx"},
     {directory: 'docker-maven', name: 'maven'},
-    {directory: 'docker-maven', name: 'maven-openjdk8', parameter: "distribution=stretch variant=openjdk8"},
     {directory: 'docker-maven', name: 'maven-openjfx', parameter: "variant=openjfx"},
   ]
 end
