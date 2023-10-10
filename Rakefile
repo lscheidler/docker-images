@@ -4,6 +4,7 @@ task default: [:bullseye]
 
 distribution :bionic, :ubuntu
 distribution :bullseye
+distribution :bookworm
 distribution :testing
 
 require_relative "images"

@@ -21,7 +21,7 @@
     - name: "pre"
       include_tasks: "tasks/{{ backend | default('docker') }}-pre.yml"
     - name: "generate chroot cache in {{ debootstrap_directory }}"
-      command: "{{ debootstrap_command | default('debootstrap') }} --variant=minbase --include={{ [ included_packages['common'] | join(','), included_packages[distribution] | default([]) | join(',')] | join(',') }} {{ distribution }} {{ debootstrap_directory }}"
+      command: "{{ debootstrap_command | default('mmdebstrap') }} --variant=apt --include={{ [ included_packages['common'] | join(','), included_packages[distribution] | default([]) | join(',')] | join(',') }} {{ distribution }} {{ debootstrap_directory }}"
       args: 
         creates: "{{ debootstrap_directory }}/bin"
       register: debootstrap
@@ -31,9 +31,12 @@
         groups:
           - chroots
 
-- hosts: chroots
-  tasks:
-    - include_tasks: tasks/chroot.yml
+    #- name: run chroot playbook
+    #  command: "{{ pre_command }} ansible-playbook chroot.yaml -e chroot_hostname={{ chroot_hostname }} -e ansible_chroot_backend={{ ansible_chroot_backend }} -vvv"
+
+#- hosts: chroots
+#  tasks:
+#    - include_tasks: tasks/chroot.yml
 
 - hosts: localhost
   connection: local
@@ -49,4 +52,5 @@
         chroot_host: '{{ hostvars[chroot_hostname] }}'
     - block:
         - include_tasks: "tasks/{{ backend | default('docker') }}-post.yml"
-      when: debootstrap is changed or chroot_host.chroot_update is changed or force | default('no') | bool
+      #when: debootstrap is changed or chroot_host.chroot_update is changed or force | default('no') | bool
+      when: debootstrap is changed or force | default('no') | bool

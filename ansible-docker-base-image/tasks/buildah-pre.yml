@@ -18,22 +18,32 @@
     ansible_chroot_backend: buildah
     build_image_name: "{{ local_repository }}:{{ type }}-{{ distribution }}-scratch"
     chroot_hostname: "{{ local_repository }}:{{ type }}-{{ distribution }}-scratch"
-- name: set debootstrap command, when rootless
+- name: run as root
   set_fact:
-    debootstrap_command: "buildah unshare /usr/sbin/debootstrap"
+    pre_command: ""
+    buildah_scratch: "buildah from --name {{ build_image_name }} scratch"
+    buildah_mount: "buildah mount {{ build_image_name }}"
+  when: buildah_type is defined and buildah_type != "rootless"
+- name: buildah unshare
+  set_fact:
+    pre_command: "buildah unshare "
+    buildah_scratch: "buildah unshare buildah from --name {{ build_image_name }} scratch"
+    buildah_mount: "buildah unshare buildah mount {{ build_image_name }}"
+    debootstrap_command: "buildah unshare mmdebstrap --mode=unshare --variant=apt --dpkgopt='path-exclude=/usr/share/{doc,info,locale,man,omf,help,gnome/help}/*' --aptopt='APT::Install-Recommends \"0\";' --aptopt='APT::Install-Suggests \"0\";'"
   when: buildah_type is defined and buildah_type == "rootless"
-- name: "create buildah scratch image"
-  command: "buildah from --name {{ build_image_name }} scratch"
-  ignore_errors: true
-  register: buildah_mount
-- name: "buildah mount {{ build_image_name }}"
-  command: "buildah unshare buildah mount {{ build_image_name }}"
-  register: buildah_mount
-  when: buildah_type is defined and buildah_type == "rootless"
-- name: "buildah mount {{ build_image_name }}"
-  command: "buildah mount {{ build_image_name }}"
-  register: buildah_mount
-  when: buildah_type is undefined or buildah_type != "rootless"
+- block:
+    - name: "create buildah scratch image"
+      command: "{{ buildah_scratch }}"
+      ignore_errors: true
+      register: buildah_image_name
+    - debug:
+        var: buildah_image_name
+- block:
+    - name: "buildah mount {{ build_image_name }}"
+      command: "{{ buildah_mount }}"
+      register: buildah_mount
+- debug:
+    var: buildah_mount
 - name: set debootstrap_directory
   set_fact:
     debootstrap_directory: "{{ buildah_mount.stdout }}"

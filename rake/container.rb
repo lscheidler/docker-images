@@ -2,7 +2,7 @@ require_relative 'config'
 
 case @backend
 when :buildah
-  if @buildah_type and @buildah_type == "rootless"
+  if @buildah_type and @buildah_type == :rootless
     container_cmd = 'buildah'
   else
     container_cmd = 'sudo buildah'
@@ -17,7 +17,7 @@ end
 @remote_repository = ENV["remote_repository"] || @remote_repository
 @container_build_args = ENV["container_build_args"] || @container_build_args
 
-@distribution = ENV["distribution"] || @distribution || 'stretch'
+@distribution = ENV["distribution"] || @distribution || 'bookworm'
 @type = ENV["type"] || @type || 'debian'
 @image_date = Time.now.strftime("%Y%m%dT%H%M%S")
 

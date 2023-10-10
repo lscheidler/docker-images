@@ -13,8 +13,18 @@
 # limitations under the License.
 
 ---
+- name: "umount buildah base image for {{ distribution }}"
+  command: "buildah umount {{ local_repository }}:{{ src_name }}-scratch"
+  when: buildah_type is defined and buildah_type != "rootless"
+- name: "umount buildah base image for {{ distribution }}"
+  command: "buildah unshare buildah umount {{ local_repository }}:{{ src_name }}-scratch"
+  when: buildah_type is defined and buildah_type == "rootless"
 - name: "commit buildah base image for {{ distribution }}"
-  command: "buildah commit {{ local_repository }}:{{ src_name }}-scratch {{ local_repository }}:{{ src_name }}-latest"
+  command: "buildah commit --squash {{ local_repository }}:{{ src_name }}-scratch {{ local_repository }}:{{ src_name }}-latest"
+  when: buildah_type is defined and buildah_type != "rootless"
+- name: "commit buildah base image for {{ distribution }}"
+  command: "buildah unshare buildah commit --squash {{ local_repository }}:{{ src_name }}-scratch {{ local_repository }}:{{ src_name }}-latest"
+  when: buildah_type is defined and buildah_type == "rootless"
 - name: "tag buildah base image"
   command: "buildah tag {{ local_repository }}:{{ src_name }}-latest {{ local_repository }}:{{ src_name }}-{{ timestamp }}"
 - block:
@@ -27,3 +37,5 @@
     - name: push buildah base image into remote repository
       command: "buildah push {{ remote_repository }}:{{ src_name }}-{{ timestamp }}"
   when: remote_repository is defined and remote_repository != ""
+- name: "remove buildah scratch image"
+  command: "buildah rm {{ local_repository }}:{{ src_name }}-scratch"
